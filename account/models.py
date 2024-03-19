@@ -1,19 +1,17 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
+from doctor.models import Service
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, password=None, name=None, surname=None, dob=None, phone=None, 
+    def create_user(self, email, password=None, first_name=None, last_name=None, dob=None, phone=None, 
                     photo=None, sex=None, created_at=None):
         if not email:
             raise ValueError(" Email field is REQUIRED !")
         user = self.model(
             email=self.normalize_email(email),
-            name=name,
-            surname=surname,
+            first_name=first_name,
+            last_name=last_name,
             dob=dob,
             phone=phone,
             photo=photo,
@@ -24,13 +22,13 @@ class MyUserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_superuser(self, email, password=None, name=None, surname=None, dob=None, phone=None, 
+    def create_superuser(self, email, password=None, first_name=None, last_name=None, dob=None, phone=None, 
                     photo=None, sex=None, created_at=None):
         user = self.create_user(
             email=self.normalize_email(email),
             password=password,
-            name=name,
-            surname=surname,
+            first_name=first_name,
+            last_name=last_name,
             dob=dob,
             phone=phone,
             photo=photo,
@@ -44,9 +42,9 @@ class MyUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser):
-    email = models.EmailField(verbose_name="email address", unique=True, max_length=256, blank=False)
-    name = models.CharField(max_length=100)
-    surname = models.CharField(max_length=100)
+    email = models.EmailField(verbose_name="email address", unique=True, max_length=250, blank=False)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     dob = models.DateField(null=True, blank=True)
     phone = models.CharField(max_length=15, null=True, blank=True)
     photo = models.ImageField(upload_to='user_photos/', null=True, blank=True)
@@ -62,9 +60,13 @@ class CustomUser(AbstractBaseUser):
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
-        return self.email
+        return self.first_name+"."+self.last_name+"  "+self.email 
 
     def has_perm(self, perm, obj=None):
         return True
@@ -75,16 +77,25 @@ class CustomUser(AbstractBaseUser):
 # Student is a custom user
 class Student(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    studentNumber = models.CharField(max_length=10)
+    studentNumber = models.CharField(max_length=10, unique=True, blank=False)
 
+    def __str__(self):
+        return self.studentNumber
 
 # Doctor is a custom user
 class Doctor(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    doctorNumber = models.CharField(max_length=10)
+    doctorNumber = models.CharField(max_length=10, unique=True, blank=False)
+    service = models.ManyToManyField(Service)
+
+    def __str__(self):
+        return self.doctorNumber
 
 
 # Receptionist is a custom user
 class Receptionist(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    receptionistNumber = models.CharField(max_length=10)
+    receptionistNumber = models.CharField(max_length=10, unique=True, blank=False)
+
+    def __str__(self):
+        return self.receptionistNumber
