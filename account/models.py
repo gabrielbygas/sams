@@ -43,8 +43,8 @@ class MyUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser):
     email = models.EmailField(verbose_name="email address", unique=True, max_length=250, blank=False)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100, null=True)
+    last_name = models.CharField(max_length=100, null=True)
     dob = models.DateField(null=True, blank=True)
     phone = models.CharField(max_length=15, null=True, blank=True)
     photo = models.ImageField(upload_to='user_photos/', null=True, blank=True)
@@ -52,7 +52,7 @@ class CustomUser(AbstractBaseUser):
         ('M', 'Male'),
         ('F', 'Female'),
     )
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = "email"
@@ -66,7 +66,15 @@ class CustomUser(AbstractBaseUser):
         ordering = ['-created_at']
 
     def __str__(self):
-        return self.first_name+"."+self.last_name+"  "+self.email 
+        full_name = ''
+        if self.first_name:
+            full_name += self.first_name
+        if self.last_name:
+            full_name += '.' + self.last_name
+        if full_name:
+            return full_name + '  ' + self.email
+        else:
+            return self.email
 
     def has_perm(self, perm, obj=None):
         return True
