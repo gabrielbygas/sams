@@ -43,8 +43,8 @@ class MyUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser):
     email = models.EmailField(verbose_name="email address", unique=True, max_length=250, blank=False)
-    first_name = models.CharField(max_length=100, null=True)
-    last_name = models.CharField(max_length=100, null=True)
+    first_name = models.CharField(max_length=100, null=True) #null=True to save a supeeruser
+    last_name = models.CharField(max_length=100, null=True) #null=True to save a supeeruser
     dob = models.DateField(null=True, blank=True)
     phone = models.CharField(max_length=15, null=True, blank=True)
     photo = models.ImageField(upload_to='user_photos/', null=True, blank=True)
@@ -52,7 +52,7 @@ class CustomUser(AbstractBaseUser):
         ('M', 'Male'),
         ('F', 'Female'),
     )
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES, null=True)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, null=True) #null=True to save a supeeruser
     created_at = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = "email"

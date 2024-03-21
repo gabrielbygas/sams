@@ -4,7 +4,7 @@ from doctor.models import Service
 
 # Create your models here.
 class Appointment(models.Model):
-    create_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     date_appointment = models.DateTimeField(null=True, blank=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, null=True, on_delete=models.SET_NULL)
@@ -31,8 +31,9 @@ class Appointment(models.Model):
 class Enquiry(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    question = models.TextField()
-    answer = models.TextField(blank=True, null=True)
+    question = models.TextField(max_length=1000)
+    answer = models.TextField(max_length=1000, blank=True, null=True)
+    is_answering = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
