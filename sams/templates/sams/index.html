@@ -1,16 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>My Website</title>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
-  </head>
-  <body>
-    <main>
-        <h1>Welcome to SAMS</h1>  
-    </main>
-  </body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  <title>SAMS - Student Appointment Medical System</title>
+{% endblock %}
+
+{% block content %}
+<!-- Content wrapper start -->
+<div class="content-wrapper">
+
+  <!-- Row start -->
+  <div class="row">
+      <div class="col-xxl-12">
+          <div class="card">
+              <div class="card-body">
+                  <div class="card-320">
+                    BYGAS KALALA
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- Row end -->
+
+</div>
+<!-- Content wrapper end -->
+{% endblock %}
+
+{% block custom-javascript %}
+{% endblock %}

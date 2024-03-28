@@ -1,0 +1,65 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+    <!-- Page Head -->
+    {% include "head.html" %}
+
+	<body>
+
+		<!-- Loading wrapper start -->
+		<div id="loading-wrapper">
+			<div class="spinner">
+				<div class="line1"></div>
+				<div class="line2"></div>
+				<div class="line3"></div>
+				<div class="line4"></div>
+				<div class="line5"></div>
+				<div class="line6"></div>
+			</div>
+		</div>
+		<!-- Loading wrapper end -->
+
+		<!-- Page wrapper start -->
+		<div class="page-wrapper">
+			
+			<!-- Page Sidebar -->
+            {% include "sidebar.html" %}
+
+			<!-- *************
+				************ Main container start *************
+			************* -->
+			<div class="main-container">
+
+				<!-- Page header -->
+                {% include "header.html" %}
+
+				<!-- Content wrapper scroll start -->
+				<div class="content-wrapper-scroll">
+
+					<!-- Block Content -->
+                    {% block content %}
+                    {% endblock %}
+
+					<!-- Page Footer -->
+                    {% include "footer.html" %}
+
+				</div>
+				<!-- Content wrapper scroll end -->
+
+			</div>
+			<!-- *************
+				************ Main container end *************
+			************* -->
+
+		</div>
+		<!-- Page wrapper end -->
+
+		<!-- Page Footer Script -->
+        {% include "footer-script.html" %}
+
+        <!-- Block Custom Javascript -->
+        {% block custom-javascript %}
+        {% endblock %}
+
+	</body>
+</html>
