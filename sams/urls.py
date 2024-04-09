@@ -1,14 +1,14 @@
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from .views import index
+from .views import home
 from sams import settings
 
 app_name = "sams"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index, name="index"),
+    path('', home, name="home"),
     path('account/', include("account.urls")),
     path('doctor/', include("doctor.urls")),
     path('receptionist/', include("receptionist.urls")),

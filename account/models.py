@@ -65,6 +65,10 @@ class CustomUser(AbstractBaseUser):
     class Meta:
         ordering = ['-created_at']
 
+    #If CustomUser is receptionist, necessary for user permissions (account.views)
+    def is_receptionist(self):
+        return hasattr(self, 'receptionist')
+
     def __str__(self):
         full_name = ''
         if self.first_name:
@@ -85,7 +89,7 @@ class CustomUser(AbstractBaseUser):
 # Student is a custom user
 class Student(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    studentNumber = models.CharField(max_length=10, unique=True, blank=False)
+    studentNumber = models.CharField(max_length=10, unique=True, blank=False, null=False)
 
     def __str__(self):
         return self.studentNumber
@@ -93,7 +97,7 @@ class Student(models.Model):
 # Doctor is a custom user
 class Doctor(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    doctorNumber = models.CharField(max_length=10, unique=True, blank=False)
+    doctorNumber = models.CharField(max_length=10, unique=True, blank=False, null=False)
     service = models.ManyToManyField(Service)
 
     def __str__(self):
@@ -103,7 +107,7 @@ class Doctor(models.Model):
 # Receptionist is a custom user
 class Receptionist(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    receptionistNumber = models.CharField(max_length=10, unique=True, blank=False)
+    receptionistNumber = models.CharField(max_length=10, unique=True, blank=False, null=False)
 
     def __str__(self):
         return self.receptionistNumber
