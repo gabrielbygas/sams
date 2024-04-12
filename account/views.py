@@ -82,6 +82,7 @@ def create_doctor(request):
 def create_receptionist(request):
     return create_user_view(request, CustomUserCreationForm, ReceptionistForm, 'account/create_receptionist.html')
 
+@login_required
 def user_creation_error_page(request):
     context = {}
     if not request.user.is_superuser and not request.user.is_receptionist():
