@@ -6,17 +6,22 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ['email', 'first_name', 'last_name', 'dob', 'phone', 'photo', 'sex']
-        
+        fields = ['email', 'first_name', 'last_name', 'dob', 'phone', 'photo', 'sex', 'password1', 'password2']
+        SEX_CHOICES = (
+            ('M', 'Male'),
+            ('F', 'Female'),
+        )
 
         widgets = {
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'dob': forms.DateInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'required': True, 'autocomplete': 'off'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'dob': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'required': True}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'photo': forms.FileInput(attrs={'class': 'form-control'}),
-            'sex': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'sex': forms.Select(choices=SEX_CHOICES, attrs={'class': 'form-control', 'required': True}),
+            'password1': forms.PasswordInput(attrs={'class': 'form-control', 'required': True, 'autocomplete': 'off'}),
+            'password2': forms.PasswordInput(attrs={'class': 'form-control', 'required': True, 'autocomplete': 'off'}),
         }
     
    
@@ -24,15 +29,19 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = CustomUser
         fields = ['email', 'first_name', 'last_name', 'dob', 'phone', 'photo', 'sex']
+        SEX_CHOICES = (
+            ('M', 'Male'),
+            ('F', 'Female'),
+        )
 
         widgets = {
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'dob': forms.DateInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'required': True, 'autocomplete': 'off'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'dob': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'required': True}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'photo': forms.FileInput(attrs={'class': 'form-control'}),
-            'sex': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'sex': forms.Select(choices=SEX_CHOICES, attrs={'class': 'form-control', 'required': True}),
         }
     
 
@@ -41,12 +50,24 @@ class StudentForm(forms.ModelForm):
         model = Student
         fields = ['studentNumber']
 
+        widgets = {
+            'studentNumber': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+        }
+
 class DoctorForm(forms.ModelForm):
     class Meta:
         model = Doctor
         fields = ['doctorNumber', 'service']
 
+        widgets = {
+            'doctorNumber': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+        }
+
 class ReceptionistForm(forms.ModelForm):
     class Meta:
         model = Receptionist
         fields = ['receptionistNumber']
+
+        widgets = {
+            'receptionistNumber': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+        }

@@ -9,10 +9,10 @@ app_name = "sams"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name="home"),
-    path('account/', include("account.urls")),
-    path('doctor/', include("doctor.urls")),
-    path('receptionist/', include("receptionist.urls")),
-    path('student/', include("student.urls")),
+    path('accounts/', include("account.urls")),
+    path('doctors/', include("doctor.urls")),
+    path('receptionists/', include("receptionist.urls")),
+    path('students/', include("student.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
