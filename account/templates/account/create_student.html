@@ -23,6 +23,7 @@
     <meta property="og:image" content="" />
     <meta property="og:site_name" content="SAMS">
     <link rel="shortcut icon" href="{% static '/sams/assets/images/logo.svg'%}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
    <!-- Title -->
    <title>Create Student</title>
@@ -89,6 +90,17 @@
       <div class="row">
         <div class="col-sm-12">
 
+          {% if messages %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="auto-close-alert">
+                <ul>
+                    {% for message in messages %}
+                      <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endif %}
+
           <div class="login-container">
             <!-- Login box start -->
             <form action="" method="POST">
@@ -101,37 +113,61 @@
                   <div class="login-welcome">
                     Welcome back, <br />Please create your SAMS / Student account.
                   </div>
+                  
+
                   <div class="mb-3">
-                    <label class="form-label" for="emails">Email</label>
-                    <input type="email" id="emails" class="form-control">
+                    <label class="form-label" for="email">{{ user_form.email.label_tag }} *</label>
+                    {{ user_form.email }}
                   </div>
                   <div class="mb-3">
-                    <label class="form-label" for="uname">Username</label>
-                    <input type="text" id="uname" class="form-control">
+                    <label class="form-label" for="first_name">{{ user_form.first_name.label_tag }} *</label>
+                    {{ user_form.first_name }}
                   </div>
                   <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                      <label class="form-label" for="savePassword">Password</label>
-                      <div class="form-check ml-auto me-0">
-                        <input class="form-check-input" type="checkbox" value="" id="savePassword">
-                        <label class="form-check-label" for="savePassword">Save Password</label>
-                      </div>
-                    </div>
-                    <input type="password" class="form-control">
+                    <label class="form-label" for="last_name">{{ user_form.last_name.label_tag }} *</label>
+                    {{ user_form.last_name }}
                   </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="dob">Date of Birth: *</label>
+                    {{ user_form.dob }}
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="phone">{{ user_form.phone.label_tag }} *</label>
+                    {{ user_form.phone }}
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="photo">{{ user_form.photo.label_tag }} </label>
+                    {{ user_form.photo }}
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="sex">{{ user_form.sex.label_tag }} *</label>
+                    {{ user_form.sex }}
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="studentNumber">{{ custom_user_form.studentNumber.label_tag }} *</label>
+                    {{ custom_user_form.studentNumber }}
+                  </div>
+
+                  <br> <br>
+                  
+                  <div class="mb-3">
+                    <label class="form-label" for="password1">{{ user_form.password1.label_tag }} *</label>
+                    {{ user_form.password1 }} 
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="password2">{{ user_form.password2.label_tag }} *</label>
+                    {{ user_form.password2 }}
+                  </div>
+
                   <div class="login-form-actions">
                     <button type="submit" class="btn"> <span class="icon"> <i class="bi bi-arrow-right-circle"></i>
                       </span>
                       Signup</button>
                   </div>
-                  <div class="login-form-actions">
-                    <button type="submit" class="btn"> <img src="assets/images/google.svg" class="login-icon"
-                        alt="Signup using Gmail">
-                      Signup using Gmail</button>
-                  </div>
+                  
                   <div class="login-form-footer">
                     <div class="additional-link">
-                      Already have an account? <a href="login.html"> Login</a>
+                      Already have an account? <a href="{% url 'accounts:login' %}"> Login</a>
                     </div>
                   </div>
                 </div>

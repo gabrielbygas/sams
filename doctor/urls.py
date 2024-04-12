@@ -3,7 +3,7 @@ from django.urls import path
 from .views import home
 from sams import settings
 
-app_name = "doctor"
+app_name = "doctors"
 
 urlpatterns = [
     path('home/', home, name="doctor-home"),

@@ -1,13 +1,13 @@
 from django.conf.urls.static import static
 from django.urls import path
-from .views import signup, logout, create_doctor, create_receptionist, create_student, user_creation_error_page
+from .views import login, logout, create_doctor, create_receptionist, create_student, user_creation_error_page
 from sams import settings
 
-app_name = "account"
+app_name = "accounts"
 
 urlpatterns = [
-    path('signup/', signup, name="account-signup"),
-    path('logout/', logout, name="account-logout"),
+    path('login/', login, name="login"),
+    path('logout/', logout, name="logout"),
     path('create-doctor/', create_doctor, name="create-doctor"),
     path('create-receptionist/', create_receptionist, name="create-receptionist"),
     path('create-student/', create_student, name="create-student"),

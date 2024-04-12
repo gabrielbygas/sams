@@ -1,11 +1,22 @@
 from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm, StudentForm, DoctorForm, ReceptionistForm
+from django.contrib.auth import authenticate, login as auth_login, logout  
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages                                       
 from .models import CustomUser, Student, Doctor, Receptionist
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 # Create your views here.
-def signup(request):
-    return render(request, "account/signup.html")
+def login(request):
+    if request.method == 'POST':
+        login_form = AuthenticationForm(request, data=request.POST)
+        if login_form.is_valid():
+            auth_login(request, login_form.get_user())
+            next_url = request.GET.get('next') or 'home'
+            return redirect(next_url)
+    else:
+        login_form = AuthenticationForm()
+    return render(request, 'account/login.html', {'login_form': login_form})
 
 def logout(request):
     return render(request, "account/logout.html")
@@ -13,59 +24,68 @@ def logout(request):
 def user_creation_error_page(request):
     return render(request, "account/user_creation_error_page.html")
 
+#if you are superuser
 def is_superuser(user):
     return user.is_superuser
 
+#if you are superuser or receptionist
 def is_superuser_or_receptionist(user):
     return user.is_superuser or user.is_receptionist()
 
-@login_required
-@user_passes_test(is_superuser_or_receptionist, login_url='user_creation_error_page')
-def create_student(request):
+#create user
+def create_user(user_form):
+    user = user_form.save()
+    return user
+
+#create custom user (student, doctor, receptionist)
+def create_custom_user(user, custom_user_form):
+    custom_user = custom_user_form.save(commit=False)
+    custom_user.user = user
+    custom_user.save()
+    return custom_user
+
+#authenticate
+def authenticate_and_login(request, user_form):
+    email = user_form.cleaned_data['email']
+    password = user_form.cleaned_data['password1']
+    user = authenticate(username=email, password=password)
+    login(request, user)
+
+def create_user_view(request, user_form_class, custom_user_form_class, template_name):
     if request.method == 'POST':
-        user_form = CustomUserCreationForm(request.POST)
-        student_form = StudentForm(request.POST)
-        if user_form.is_valid() and student_form.is_valid():
-            user = user_form.save()
-            student = student_form.save(commit=False)
-            student.user = user
-            student.save()
-            return redirect('home')
+        user_form = user_form_class(request.POST)
+        custom_user_form = custom_user_form_class(request.POST)
+        if user_form.is_valid() and custom_user_form.is_valid():
+            try:
+                user = create_user(user_form)
+                create_custom_user(user, custom_user_form)
+                authenticate_and_login(request, user_form)
+                messages.success(request, "You Have Successfully Registered! Welcome!")
+                return redirect('home')
+            except Exception as e:
+                messages.error(request, f"An error occurred: {e}")
     else:
-        user_form = CustomUserCreationForm()
-        student_form = StudentForm()
-    return render(request, 'account/create_student.html', {'user_form': user_form, 'student_form': student_form})
+        user_form = user_form_class()
+        custom_user_form = custom_user_form_class()
+    return render(request, template_name, {'user_form': user_form, 'custom_user_form': custom_user_form})
+
+def create_student(request):
+    return create_user_view(request, CustomUserCreationForm, StudentForm, 'account/create_student.html')
 
 @login_required
 @user_passes_test(is_superuser_or_receptionist, login_url='user_creation_error_page')
 def create_doctor(request):
-    if request.method == 'POST':
-        user_form = CustomUserCreationForm(request.POST)
-        doctor_form = DoctorForm(request.POST)
-        if user_form.is_valid() and doctor_form.is_valid():
-            user = user_form.save()
-            doctor = doctor_form.save(commit=False)
-            doctor.user = user
-            doctor.save()
-            return redirect('home')
-    else:
-        user_form = CustomUserCreationForm()
-        doctor_form = DoctorForm()
-    return render(request, 'account/create_doctor.html', {'user_form': user_form, 'doctor_form': doctor_form})
+    return create_user_view(request, CustomUserCreationForm, DoctorForm, 'account/create_doctor.html')
 
 @login_required
 @user_passes_test(is_superuser, login_url='user_creation_error_page')
 def create_receptionist(request):
-    if request.method == 'POST':
-        user_form = CustomUserCreationForm(request.POST)
-        receptionist_form = ReceptionistForm(request.POST)
-        if user_form.is_valid() and receptionist_form.is_valid():
-            user = user_form.save()
-            receptionist = receptionist_form.save(commit=False)
-            receptionist.user = user
-            receptionist.save()
-            return redirect('home')
-    else:
-        user_form = CustomUserCreationForm()
-        receptionist_form = ReceptionistForm()
-    return render(request, 'account/create_receptionist.html', {'user_form': user_form, 'receptionist_form': receptionist_form})
+    return create_user_view(request, CustomUserCreationForm, ReceptionistForm, 'account/create_receptionist.html')
+
+def user_creation_error_page(request):
+    context = {}
+    if not request.user.is_superuser and not request.user.is_receptionist():
+        context['error_message'] = "Only an Admin or receptionist can access this page."
+    elif not request.user.is_receptionist():
+        context['error_message'] = "Only a receptionist can access this page."
+    return render(request, "account/user_creation_error_page.html", context)

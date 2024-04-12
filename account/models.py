@@ -42,7 +42,7 @@ class MyUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser):
-    email = models.EmailField(verbose_name="email address", unique=True, max_length=250, blank=False)
+    email = models.EmailField(verbose_name="Email", unique=True, max_length=250, blank=False)
     first_name = models.CharField(max_length=100, null=True) #null=True to save a supeeruser
     last_name = models.CharField(max_length=100, null=True) #null=True to save a supeeruser
     dob = models.DateField(null=True, blank=True)
@@ -89,7 +89,7 @@ class CustomUser(AbstractBaseUser):
 # Student is a custom user
 class Student(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    studentNumber = models.CharField(max_length=10, unique=True, blank=False, null=False)
+    studentNumber = models.CharField(verbose_name="Student Number", max_length=10, unique=True, blank=False, null=False)
 
     def __str__(self):
         return self.studentNumber
@@ -97,7 +97,7 @@ class Student(models.Model):
 # Doctor is a custom user
 class Doctor(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    doctorNumber = models.CharField(max_length=10, unique=True, blank=False, null=False)
+    doctorNumber = models.CharField(verbose_name="Doctor Number", max_length=10, unique=True, blank=False, null=False)
     service = models.ManyToManyField(Service)
 
     def __str__(self):
@@ -107,7 +107,7 @@ class Doctor(models.Model):
 # Receptionist is a custom user
 class Receptionist(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    receptionistNumber = models.CharField(max_length=10, unique=True, blank=False, null=False)
+    receptionistNumber = models.CharField(verbose_name="Receptionist Number", max_length=10, unique=True, blank=False, null=False)
 
     def __str__(self):
         return self.receptionistNumber
