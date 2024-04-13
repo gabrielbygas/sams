@@ -29,7 +29,24 @@
           <div class="card">
               <div class="card-body">
                   <div class="card-320">
-                    BYGAS KALALA
+                    <!-- if messages -->
+                    {% if messages %}
+                      <div class="alert alert-danger alert-dismissible fade show" role="alert" id="myAlert">
+                          <ul>
+                              {% for message in messages %}
+                                <li>{{ message }}</li>
+                              {% endfor %}
+                          </ul>
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                    {% endif %}
+                    <!-- End messages -->
+
+                    {% if user.is_authenticated %}
+                      {{ user }}
+                    {% else %}
+                      <p> Please, Log In => <a href="{% url 'accounts:login' %}"> Here </a> </p>
+                    {% endif %}
                   </div>
               </div>
           </div>
@@ -42,4 +59,12 @@
 {% endblock %}
 
 {% block custom-javascript %}
+<script>
+  // Utilisez jQuery pour sélectionner l'alerte et la faire disparaître après 5 secondes
+  $(document).ready(function(){
+    setTimeout(function() {
+      $("#myAlert").alert('close');
+    }, 5000);
+  });
+  </script>
 {% endblock %}
