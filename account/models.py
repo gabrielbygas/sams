@@ -65,9 +65,17 @@ class CustomUser(AbstractBaseUser):
     class Meta:
         ordering = ['-created_at']
 
+    #If CustomUser is doctor, necessary for user permissions (account.views)
+    def is_doctor(self):
+        return hasattr(self, 'doctor')
+
     #If CustomUser is receptionist, necessary for user permissions (account.views)
     def is_receptionist(self):
         return hasattr(self, 'receptionist')
+    
+    #If CustomUser is receptionist, necessary for user permissions (account.views)
+    def is_student(self):
+        return hasattr(self, 'student')
 
     def __str__(self):
         full_name = ''

@@ -2,7 +2,8 @@
 <!doctype html>
 <html lang="en">
     <!-- Page Head -->
-    {% include "head.html" %}
+	{% block title %}{% endblock %}
+    {% include "head.html" with title=title %}
 
 	<body>
 
@@ -31,7 +32,8 @@
 			<div class="main-container">
 
 				<!-- Page header -->
-                {% include "header.html" %}
+				{% block breadcrumb %}{% endblock %}
+                {% include "header.html" with breadcrumb=breadcrumb %}
 
 				<!-- Content wrapper scroll start -->
 				<div class="content-wrapper-scroll">
