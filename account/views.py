@@ -63,33 +63,45 @@ def authenticate_and_login(request, user_form):
     login(request, user)
 
 def create_user_view(request, user_form_class, custom_user_form_class, template_name, redirect_to):
-    if request.method == 'POST':
-        user_form = user_form_class(request.POST)
+    if request.method == 'POST': #if POST Request
+        user_form = user_form_class(request.POST, request.FILES)
         custom_user_form = custom_user_form_class(request.POST)
-        if user_form.is_valid() and custom_user_form.is_valid():
-            try:
-                user = create_user(user_form)
-                create_custom_user(user, custom_user_form)
-                authenticate_and_login(request, user_form)
-                messages.success(request, "You Have Successfully Registered! Welcome!")
-                return redirect(redirect_to)
-            except Exception as e:
-                messages.error(request, f"An error occurred: {e}")
-    else:
+        try:
+            if not user_form.is_valid(): #if user_form is not valid
+                for field, errors in user_form.errors.items():
+                    for error in errors: # so, print all fields errors
+                        messages.error(request, f"User Form Error, field ' {field} ' : {error} \n")
+            if not custom_user_form.is_valid(): #if custom_user_form is not valid
+                for field, errors in custom_user_form.errors.items():
+                    for error in errors: # so, print all fields errors
+                        messages.error(request, f"Custom User Form Error, field ' {field} ' : {error} \n")
+            if user_form.is_valid() and custom_user_form.is_valid():
+                try:
+                    user = create_user(user_form)
+                    create_custom_user(user, custom_user_form)
+                    authenticate_and_login(request, user_form)
+                    messages.success(request, "You Have Successfully Registered! Welcome!")
+                    return redirect(redirect_to)
+                except Exception as e: # if all form are valid, so an error occured during user creation (create_user and/or create_custom_user function) or aunthentication (auntenticate_and_login function)
+                    messages.error(request, f"Your Form is Valid But an Unexpected error occurred during user creation or authentication: {e}")
+        except Exception as e:
+            messages.error(request, f"An unexpected error occurred: {e}")
+    else: # GET Request
         user_form = user_form_class()
         custom_user_form = custom_user_form_class()
     return render(request, template_name, {'user_form': user_form, 'custom_user_form': custom_user_form})
+
 
 def create_student(request):
     return create_user_view(request, CustomUserCreationForm, StudentForm, 'account/create_student.html', 'students:home')
 
 @login_required
-@user_passes_test(is_superuser_or_receptionist, login_url='user_creation_error_page')
+@user_passes_test(is_superuser_or_receptionist, login_url='accounts:user_creation_error_page')
 def create_doctor(request):
     return create_user_view(request, CustomUserCreationForm, DoctorForm, 'account/create_doctor.html', 'doctors:home')
 
 @login_required
-@user_passes_test(is_superuser, login_url='user_creation_error_page')
+@user_passes_test(is_superuser, login_url='accounts:user_creation_error_page')
 def create_receptionist(request):
     return create_user_view(request, CustomUserCreationForm, ReceptionistForm, 'account/create_receptionist.html', 'receptionists:home')
 

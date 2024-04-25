@@ -20,7 +20,7 @@ class DoctorAdmin(admin.ModelAdmin):
     list_filter = ("service", )
 
     def get_full_name(self, obj):
-        return obj.user.first_name + " " + obj.user.lasst_name  # Access the first name of the user associated with the doctor
+        return obj.user.first_name + " " + obj.user.last_name  # Access the first name of the user associated with the doctor
     get_full_name.short_description = 'Full Name'  # Display name for the field
 
     def get_email(self, obj):
@@ -39,7 +39,7 @@ class StudentAdmin(admin.ModelAdmin):
     search_fields = ("studentNumber", )
 
     def get_full_name(self, obj):
-        return obj.user.first_name + " " + obj.user.lasst_name 
+        return obj.user.first_name + " " + obj.user.last_name 
     get_full_name.short_description = 'Full Name' 
 
     def get_email(self, obj):
@@ -55,7 +55,7 @@ class ReceptionistAdmin(admin.ModelAdmin):
     search_fields = ("receptionistNumber", )
 
     def get_full_name(self, obj):
-        return obj.user.first_name + " " + obj.user.lasst_name 
+        return obj.user.first_name + " " + obj.user.last_name 
     get_full_name.short_description = 'Full Name' 
 
     def get_email(self, obj):
