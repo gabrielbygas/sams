@@ -6,5 +6,5 @@ from sams import settings
 app_name = "doctors"
 
 urlpatterns = [
-    path('home/', home, name="doctor-home"),
+    path('home/', home, name="home"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

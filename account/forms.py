@@ -18,7 +18,7 @@ class CustomUserCreationForm(UserCreationForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'dob': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'required': True}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
-            'photo': forms.FileInput(attrs={'class': 'form-control'}),
+            'photo': forms.FileInput(attrs={'class': 'form-control', 'required': True}),
             'sex': forms.Select(choices=SEX_CHOICES, attrs={'class': 'form-control', 'required': True}),
             'password1': forms.PasswordInput(attrs={'class': 'form-control', 'required': True, 'autocomplete': 'off'}),
             'password2': forms.PasswordInput(attrs={'class': 'form-control', 'required': True, 'autocomplete': 'off'}),
@@ -40,7 +40,7 @@ class CustomUserChangeForm(UserChangeForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'dob': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'required': True}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
-            'photo': forms.FileInput(attrs={'class': 'form-control'}),
+            'photo': forms.FileInput(attrs={'class': 'form-control', 'required': True}),
             'sex': forms.Select(choices=SEX_CHOICES, attrs={'class': 'form-control', 'required': True}),
         }
     

@@ -73,131 +73,137 @@
 
 <body>
 
-    <!-- Loading wrapper start -->
-    <!-- <div id="loading-wrapper">
-			<div class="spinner">
-                <div class="line1"></div>
-				<div class="line2"></div>
-				<div class="line3"></div>
-				<div class="line4"></div>
-				<div class="line5"></div>
-				<div class="line6"></div>
-            </div>
-		</div> -->
-    <!-- Loading wrapper end -->
+  <!-- Container startss -->
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="login-container">
+          <!-- Login box start -->
+          <form action="" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+            <div class="login-box">
+              <div class="login-form">
+                <a href="{% url 'home' %}" class="login-logo">
+                  <img src="{% static '/sams/assets/images/logo.svg'%}" alt="SAMS" />
+                </a>
+                <div class="login-welcome">
+                  Welcome back, <br />Please create your SAMS / Receptionist account.
+                </div>
+                
+                {% if messages %}
+                  <div class="alert alert-dismissible fade show" role="alert" id="auto-close-alert">
+                      <ul>
+                          {% for message in messages %}
+                              {% if message.tags == 'error' %}
+                                  <div class="alert alert-danger">
+                                      <li>{{ message }}</li>
+                                  </div>
+                              {% elif message.tags == 'success' %}
+                                  <div class="alert alert-success">
+                                      <li>{{ message }}</li>
+                                  </div>
+                              {% endif %}
+                          {% endfor %}
+                      </ul>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endif %}
 
-    <!-- Container startss -->
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-12">
+                <div class="mb-3">
+                  <label class="form-label" for="email">{{ user_form.email.label_tag }} *</label>
+                  {{ user_form.email }}
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="first_name">{{ user_form.first_name.label_tag }} *</label>
+                  {{ user_form.first_name }}
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="last_name">{{ user_form.last_name.label_tag }} *</label>
+                  {{ user_form.last_name }}
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="dob">Date of Birth: *</label>
+                  {{ user_form.dob }}
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="phone">{{ user_form.phone.label_tag }} *</label>
+                  {{ user_form.phone }}
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="photo">{{ user_form.photo.label_tag }} *</label>
+                  {{ user_form.photo }}
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="sex">{{ user_form.sex.label_tag }} *</label>
+                  {{ user_form.sex }}
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="receptionistNumber">{{ custom_user_form.receptionistNumber.label_tag }} *</label>
+                  {{ custom_user_form.receptionistNumber }}
+                </div>
 
-          {% if messages %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="auto-close-alert">
-                <ul>
-                    {% for message in messages %}
-                      <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          {% endif %}
+                <br> 
+                
+                <div class="mb-3">
+                  <label class="form-label" for="password1">Password 1: *</label>
+                  {{ user_form.password1 }} 
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="password2">Password 2: *</label>
+                  {{ user_form.password2 }}
+                </div>
+                <br> <br>
 
-          <div class="login-container">
-            <!-- Login box start -->
-            <form action="" method="POST">
-                {% csrf_token %}
-              <div class="login-box">
-                <div class="login-form">
-                  <a href="{% url 'home' %}" class="login-logo">
-                    <img src="{% static '/sams/assets/images/logo.svg'%}" alt="SAMS" />
-                  </a>
-                  <div class="login-welcome">
-                    Welcome back, <br />Please create your SAMS / Receptionist account.
-                  </div>
-                  
-
-                  <div class="mb-3">
-                    <label class="form-label" for="email">{{ user_form.email.label_tag }} *</label>
-                    {{ user_form.email }}
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label" for="first_name">{{ user_form.first_name.label_tag }} *</label>
-                    {{ user_form.first_name }}
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label" for="last_name">{{ user_form.last_name.label_tag }} *</label>
-                    {{ user_form.last_name }}
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label" for="dob">Date of Birth: *</label>
-                    {{ user_form.dob }}
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label" for="phone">{{ user_form.phone.label_tag }} *</label>
-                    {{ user_form.phone }}
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label" for="photo">{{ user_form.photo.label_tag }} </label>
-                    {{ user_form.photo }}
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label" for="sex">{{ user_form.sex.label_tag }} *</label>
-                    {{ user_form.sex }}
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label" for="receptionistNumber">{{ custom_user_form.receptionistNumber.label_tag }} *</label>
-                    {{ custom_user_form.receptionistNumber }}
-                  </div>
-
-                  <br> <br>
-                  
-                  <div class="mb-3">
-                    <label class="form-label" for="password1">{{ user_form.password1.label_tag }} *</label>
-                    {{ user_form.password1 }} 
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label" for="password2">{{ user_form.password2.label_tag }} *</label>
-                    {{ user_form.password2 }}
-                  </div>
-
-                  <div class="login-form-actions">
-                    <button type="submit" class="btn"> <span class="icon"> <i class="bi bi-arrow-right-circle"></i>
-                      </span>
-                      Signup</button>
-                  </div>
-                  
-                  <div class="login-form-footer">
-                    <div class="additional-link">
-                      Already have an account? <a href="{% url 'accounts:login' %}"> Login</a>
-                    </div>
+                <div class="login-form-actions">
+                  <button type="submit" class="btn"> <span class="icon"> <i class="bi bi-arrow-right-circle"></i>
+                    </span>
+                    Signup</button>
+                </div>
+                
+                <div class="login-form-footer">
+                  <div class="additional-link">
+                    Already have an account? <a href="{% url 'accounts:login' %}"> Login</a>
                   </div>
                 </div>
               </div>
-            </form>
-            <!-- Login box end -->
-          </div>
-
+            </div>
+          </form>
+          <!-- Login box end -->
         </div>
+
       </div>
     </div>
-    <!-- Container ends -->
+  </div>
+  <!-- Container ends -->
 
-    <!-- *************
-			************ Required JavaScript Files *************
-		************* -->
-    <!-- Required jQuery first, then Bootstrap Bundle JS -->
-    <script src="{% static '/sams/assets/js/jquery.min.js'%}"></script>
-    <script src="{% static '/sams/assets/js/bootstrap.bundle.min.js'%}"></script>
-    <script src="{% static '/sams/assets/js/modernizr.js'%}"></script>
-    <script src="{% static '/sams/assets/js/moment.js'%}"></script>
+  <!-- *************
+    ************ Required JavaScript Files *************
+  ************* -->
+  <!-- Required jQuery first, then Bootstrap Bundle JS -->
+  <script src="{% static '/sams/assets/js/jquery.min.js'%}"></script>
+  <script src="{% static '/sams/assets/js/bootstrap.bundle.min.js'%}"></script>
+  <script src="{% static '/sams/assets/js/modernizr.js'%}"></script>
+  <script src="{% static '/sams/assets/js/moment.js'%}"></script>
 
-    <!-- *************
-			************ Vendor Js Files *************
-		************* -->
+  <!-- *************
+    ************ Vendor Js Files *************
+  ************* -->
 
-    <!-- Main Js Required -->
-    <script src="{% static '/sams/assets/js/main.js'%}"></script>
+  <!-- Main Js Required -->
+  <script src="{% static '/sams/assets/js/main.js'%}"></script>
 
-  </body>
+  <script>
+    (function($) {
+        $(document).ready(function() {  
+            // Message alert
+            var alertDiv = $("#auto-close-alert");
+            setTimeout(function() {
+                alertDiv.fadeOut(1000);
+            }, 5000); //close in 10 seconds
+        });
+    })(jQuery);
+  </script>
+
+</body>
 
 </html>

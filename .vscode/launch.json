@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [ 
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "SHIS",
+            "python": "/home/gkalala/Documents/DJANGO/Projects/shis/.env/bin/python3.10",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/gkalala/Documents/DJANGO/Projects/shis/manage.py",
+            "console": "integratedTerminal",
+            "args": ["runserver"]
+        }
+    ]
+}

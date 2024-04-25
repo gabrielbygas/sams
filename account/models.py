@@ -84,7 +84,7 @@ class CustomUser(AbstractBaseUser):
         if self.last_name:
             full_name += '.' + self.last_name
         if full_name:
-            return full_name + '  ' + self.email
+            return full_name + '  >  ' + self.email
         else:
             return self.email
 
