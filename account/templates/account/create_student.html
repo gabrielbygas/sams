@@ -24,6 +24,8 @@
     <meta property="og:site_name" content="SAMS">
     <link rel="shortcut icon" href="{% static '/sams/assets/images/logo.svg'%}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
    <!-- Title -->
    <title>Create Student</title>
@@ -182,6 +184,7 @@
   <script src="{% static '/sams/assets/js/bootstrap.bundle.min.js'%}"></script>
   <script src="{% static '/sams/assets/js/modernizr.js'%}"></script>
   <script src="{% static '/sams/assets/js/moment.js'%}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   <!-- *************
     ************ Vendor Js Files *************
@@ -192,13 +195,16 @@
 
   <script>
     (function($) {
-        $(document).ready(function() {  
-            // Message alert
-            var alertDiv = $("#auto-close-alert");
-            setTimeout(function() {
-                alertDiv.fadeOut(1000);
-            }, 5000); //close in 10 seconds
-        });
+      $(document).ready(function() {  
+        // Message alert
+        var alertDiv = $("#auto-close-alert");
+        setTimeout(function() {
+            alertDiv.fadeOut(1000);
+        }, 5000); //close in 10 seconds
+
+        //select2
+        $('#id_sex').select2();
+      });
     })(jQuery);
   </script>
 
