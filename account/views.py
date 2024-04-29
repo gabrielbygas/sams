@@ -2,8 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm, StudentForm, DoctorForm, ReceptionistForm
 from django.contrib.auth import authenticate, login, logout  
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages                                       
-from .models import CustomUser, Student, Doctor, Receptionist
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 # Create your views here.
@@ -109,7 +108,7 @@ def create_receptionist(request):
 def user_creation_error_page(request):
     context = {}
     if not request.user.is_superuser and not request.user.is_receptionist():
-        context['error_message'] = "Only an Admin or receptionist can access this page."
+        context['error_message'] = "Only an Admin or Receptionist can access this page."
     elif not request.user.is_receptionist():
-        context['error_message'] = "Only a receptionist can access this page."
+        context['error_message'] = "Only a Receptionist can access this page."
     return render(request, "account/user_creation_error_page.html", context)

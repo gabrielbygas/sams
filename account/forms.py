@@ -1,5 +1,5 @@
 from django import forms
-from .models import CustomUser, Student, Receptionist, Doctor
+from .models import CustomUser, Student, Receptionist, Doctor, Service
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
@@ -58,9 +58,11 @@ class DoctorForm(forms.ModelForm):
     class Meta:
         model = Doctor
         fields = ['doctorNumber', 'service']
+        service = Service.objects.all()
 
         widgets = {
             'doctorNumber': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'service': forms.SelectMultiple(attrs={'class': 'form-control', 'required': True}),
         }
 
 class ReceptionistForm(forms.ModelForm):
