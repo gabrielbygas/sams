@@ -28,7 +28,7 @@ class DoctorAdmin(admin.ModelAdmin):
     get_email.short_description = 'Email'  # Display name for the field
 
     def get_service(self, obj):
-        return obj.service.name
+        return ", ".join([service.name for service in obj.service.all()])
     get_service.short_descrition = 'Service'
 
 @admin.register(Student)
