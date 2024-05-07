@@ -77,7 +77,17 @@ def create_user_view(request, user_form_class, custom_user_form_class, template_
             if user_form.is_valid() and custom_user_form.is_valid():
                 try:
                     user = create_user(user_form)
-                    create_custom_user(user, custom_user_form)
+                    custom_user = create_custom_user(user, custom_user_form)
+                    
+                    #if the custom_user is a doctor, so he has a service field
+                    if(custom_user_form.cleaned_data.get('service')):
+                         # Get the services from the form
+                        services = custom_user_form.cleaned_data.get('service')
+                        # Add the services to the doctor
+                        for service in services:
+                            custom_user.service.add(service)
+                        custom_user.save()
+
                     authenticate_and_login(request, user_form)
                     messages.success(request, "You Have Successfully Registered! Welcome!")
                     return redirect(redirect_to)
