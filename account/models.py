@@ -100,7 +100,7 @@ class Student(models.Model):
     studentNumber = models.CharField(verbose_name="Student Number", max_length=10, unique=True, blank=False, null=False)
 
     def __str__(self):
-        return self.studentNumber
+        return self.user.first_name + '.' + self.user.last_name + ' / ' + self.studentNumber
 
 # Doctor is a custom user
 class Doctor(models.Model):
@@ -109,7 +109,7 @@ class Doctor(models.Model):
     service = models.ManyToManyField(Service)
 
     def __str__(self):
-        return self.doctorNumber
+        return self.user.first_name + '.' + self.user.last_name + ' / ' + self.doctorNumber
 
 
 # Receptionist is a custom user
@@ -118,4 +118,4 @@ class Receptionist(models.Model):
     receptionistNumber = models.CharField(verbose_name="Receptionist Number", max_length=10, unique=True, blank=False, null=False)
 
     def __str__(self):
-        return self.receptionistNumber
+        return self.user.first_name + '.' + self.user.last_name + ' / ' + self.receptionistNumber
