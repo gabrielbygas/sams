@@ -12,5 +12,5 @@ def home(request):
 @login_required
 def get_doctors(request):
     service_id = request.GET.get('service')
-    doctors = Doctor.objects.filter(service__id=service_id).order_by('name')
-    return HttpResponse('<option value="">---------</option>' + ''.join([f'<option value="{doctor.id}">{doctor.name}</option>' for doctor in doctors]))
+    doctors = Doctor.objects.filter(service__id=service_id).order_by('service__name')
+    return HttpResponse('<option value="">---------</option>' + ''.join([f'<option value="{doctor.id}">{doctor.user.first_name} {doctor.user.last_name} | {doctor.doctorNumber}</option>' for doctor in doctors]))

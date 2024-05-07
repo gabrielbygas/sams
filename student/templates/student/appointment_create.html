@@ -117,7 +117,7 @@
 
 {% block custom-javascript %}
 <script>
-  // Utilisez jQuery pour sélectionner l'alerte et la faire disparaître après 5 secondes
+  // alert setTimeout
   $(document).ready(function(){
     setTimeout(function() {
       $("#auto-close-alert").alert('close');
@@ -128,6 +128,33 @@
     $('#id_service').select2();
     $('#id_doctor').select2();
     $('#id_time_schedule').select2();
+
+    // Deactive Doctor select
+    $('#id_doctor').prop('disabled', true);
+
+    //select Doctor dynamically
+    $('#id_service').change(function() {
+      var url = "/doctors/get_doctors/";  
+      var serviceId = $(this).val();
+
+      $.ajax({
+        url: url,
+        data: {
+            'service': serviceId
+        },
+        success: function(data) {
+            // Activate Doctor select
+            $('#id_doctor').prop('disabled', false);
+            $("#id_doctor").html(data);
+        },
+        error: function() {
+          alert("Can't Load Doctors to corresponding service");
+          // Deactivate Doctor select if Ajax fail
+          $('#id_doctor').prop('disabled', true);
+        }
+      });
+    });
+
   });
-  </script>
+</script>
 {% endblock %}

@@ -7,5 +7,6 @@ app_name = "doctors"
 
 urlpatterns = [
     path('home/', home, name="home"),
+    path('', home, name="home"),
     path('get_doctors/', get_doctors, name="get_doctors"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
