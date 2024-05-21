@@ -34,75 +34,90 @@
               </div>
               <div class="card-body">
                 <br/>
-
-                <!-- if messages -->
-                {% if messages %}
-                <div class="alert alert-dismissible fade show" role="alert" id="auto-close-alert">
-                    <ul>
+                <form class="" method="POST" action="{% url 'students:create-appointment' %}">
+                  {% csrf_token %}
+                  <!-- Error messages -->
+                  {% if messages or form.non_field_errors or form.errors %}
+                    <div class="alert alert-dismissible fade show" role="alert" id="auto-close-alert">
+                      <ul>
                         {% for message in messages %}
-                            {% if message.tags == 'error' %}
-                                <div class="alert alert-danger">
-                                    <li>{{ message }}</li>
-                                </div>
-                            {% elif message.tags == 'success' %}
-                                <div class="alert alert-success">
-                                    <li>{{ message }}</li>
-                                </div>
-                            {% endif %}
+                          {% if message.tags == 'error' %}
+                              <div class="alert alert-danger">
+                                  <li>{{ message }}</li>
+                              </div>
+                          {% elif message.tags == 'success' %}
+                              <div class="alert alert-success">
+                                  <li>{{ message }}</li>
+                              </div>
+                          {% endif %}
                         {% endfor %}
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                {% endif %}
-                <!-- End messages -->
 
-                <!-- Row start -->
-                <div class="row gx-3">
-                    <div class="col-xl-12 col-sm-12 col-12">
-                        <div class="mb-3">
-                            <div class="form-label">{{ form.date_appointment.label_tag }}</div>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-calendar4"></i>
-                                </span>
-                                {{ form.date_appointment }}
-                            </div>
-                        </div>
+                        {% for error in form.non_field_errors %}
+                          <div class="alert alert-danger">
+                              <li>{{ error }}</li>
+                          </div>
+                        {% endfor %}
+
+                        {% for field in form %}
+                          {% for error in field.errors %}
+                              <div class="alert alert-danger">
+                                  <li>{{ error }}</li>
+                              </div>
+                          {% endfor %}
+                        {% endfor %}
+                      </ul>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+                  {% endif %}
+                  <!-- Error messages -->
+
+                  <!-- Row start -->
+                  <div class="row gx-3">
                     <div class="col-xl-12 col-sm-12 col-12">
                         <div class="mb-3">
                         <label for="student" class="form-label">{{ form.student.label_tag }}</label>
-                        {{ form.student  }}
+                        {% if user.is_student %}
+                          {{ user.first_name }} {{ user.last_name }}
+                          <input type="hidden" name="student" value="{{ user.student.id }}">
+                        {% else %}
+                          {{ form.student  }}
+                        {% endif %}
                         </div>
                     </div>
+                    <div class="col-xl-12 col-sm-12 col-12">
+                      <div class="mb-3">
+                        <label for="date_appointment" class="form-label">{{ form.date_appointment.label_tag }}</label>
+                        {{ form.date_appointment }}
+                      </div>
+                    </div> 
                     <div class="col-xl-12 col-sm-12 col-12">
                         <div class="mb-3">
                             <label for="service" class="form-label">{{ form.service.label_tag }}</label>
                             {{ form.service }}
                         </div>
                     </div>
-                  <div class="col-xl-12 col-sm-12 col-12">
-                    <div class="mb-3">
-                      <label for="doctor" class="form-label">{{ form.doctor.label_tag }}</label>
-                      {{ form.doctor }}
+                    <div class="col-xl-12 col-sm-12 col-12">
+                      <div class="mb-3">
+                        <label for="doctor" class="form-label">{{ form.doctor.label_tag }}</label>
+                        {{ form.doctor }}
+                      </div>
                     </div>
-                  </div>
-                  <div class="col-xl-12 col-sm-12 col-12">
-                    <div class="mb-3">
-                        <label for="time-schedule" class="form-label">{{ form.time_schedule.label_tag }}</label>
-                        {{ form.time_schedule }}
+                    <div class="col-xl-12 col-sm-12 col-12">
+                      <div class="mb-3">
+                          <label for="time-schedule" class="form-label">{{ form.time_schedule.label_tag }}</label>
+                          {{ form.time_schedule }}
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <!-- Row end -->
+                  </div> <br/>
+                  <!-- Row end -->
 
-                <!-- Form actions footer start -->
-                <div class="form-actions-footer">
-                  <button class="btn btn-light">Cancel</button>
-                  <button class="btn btn-success">Submit</button>
-                </div>
-                <!-- Form actions footer end -->
-
+                  <!-- Form actions footer start -->
+                  <div class="text-center"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
+                    <button type="submit" class="btn btn-primary"><span class="icon"> <i class="bi bi-check-circle"></i></span>Submit</button>&nbsp; &nbsp; &nbsp;
+                    <button type="reset" class="btn btn-danger"><span class="icon"> <i class="bi bi-x-circle"></i></span>Reset</button>
+                  </div><br/>
+                  <!-- Form actions footer end -->
+                </form>
               </div>
             </div>
             <!-- Card end -->

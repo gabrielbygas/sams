@@ -11,6 +11,6 @@ urlpatterns = [
     path('create-doctor/', create_doctor, name="create-doctor"),
     path('create-receptionist/', create_receptionist, name="create-receptionist"),
     path('create-student/', create_student, name="create-student"),
-    path('user_creation_error_page/', user_creation_error_page, name="user_creation_error_page")
+    path('user-creation-error-page/', user_creation_error_page, name="user_creation_error_page")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -119,6 +119,6 @@ def user_creation_error_page(request):
     context = {}
     if not request.user.is_superuser and not request.user.is_receptionist():
         context['error_message'] = "Only an Admin or Receptionist can access this page."
-    elif not request.user.is_receptionist():
+    elif not request.user.is_superuser():
         context['error_message'] = "Only a Receptionist can access this page."
     return render(request, "account/user_creation_error_page.html", context)

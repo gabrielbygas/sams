@@ -1,10 +1,13 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
-from .models import Appointment, Enquiry
-from .forms import AppointmentForm
+from student.models import Appointment, Enquiry
+from student.forms import AppointmentForm
+from account.models import Student
 
 
 # Create your views here.
@@ -14,12 +17,38 @@ def home(request):
     context['user'] = request.user
     return render(request, "student/home.html", context)
 
+# if you are not a doctor
+def is_not_doctor(user):
+    return not user.is_doctor()
+
+@login_required
+def student_error_page(request):
+    context = {}
+    if not request.user.is_superuser or request.user.is_doctor():
+        context['error_message'] = "Doctor is not allowed to access this page."
+    return render(request, "student/student_error_page.html", context)
 
 # List Appointment
+@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_doctor, login_url='students:error-page'), name='dispatch')
 class AppointmentListView(ListView):
     model = Appointment
     context_object_name = "appointments"
     template_name = "student/appointment_list.html"
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student(): #if student
+            student = Student.objects.get(user=user)
+            return Appointment.objects.filter(student=student).order_by('-date_appointment')
+        else: #if receptionist
+            return Appointment.objects.all().order_by('-date_appointment')
+        
+    def render_to_response(self, context, **response_kwargs):
+        # Convert queryset to JSON
+        data = list(context['object_list'].values('date_appointment', 'student__user__first_name', 'service__name', 'doctor__user__first_name', 'time_schedule'))
+        return JsonResponse(data, safe=False)
+
 
 # Detail Appointment
 class AppointmentDetailView(DetailView):
@@ -28,6 +57,8 @@ class AppointmentDetailView(DetailView):
     template_name = "student/appointment_detail.html"
 
 # Create Appointment
+@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_doctor, login_url='students:error-page'), name='dispatch')
 class AppointmentCreateView(CreateView):
     model = Appointment
     form_class = AppointmentForm
@@ -44,7 +75,8 @@ class AppointmentCreateView(CreateView):
 
     
     def get_success_url(self):
-        return reverse("student:home")
+        messages.success(self.request, 'Appointment created successfully!')
+        return reverse("students:home")
 
 # Update Appointment
 class AppointmentUpdateView(UpdateView):
