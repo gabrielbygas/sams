@@ -45,9 +45,18 @@ class AppointmentListView(ListView):
             return Appointment.objects.all().order_by('-date_appointment')
         
     def render_to_response(self, context, **response_kwargs):
-        # Convert queryset to JSON
-        data = list(context['object_list'].values('date_appointment', 'student__user__first_name', 'service__name', 'doctor__user__first_name', 'time_schedule'))
-        return JsonResponse(data, safe=False)
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            data = list(self.get_queryset().values(
+                'id',
+                'date_appointment', 
+                'student__user__first_name', 
+                'service__name', 
+                'doctor__user__first_name', 
+                'time_schedule'
+            ))
+            return JsonResponse(data, safe=False)
+        else:
+            return super().render_to_response(context, **response_kwargs)
 
 
 # Detail Appointment

@@ -23,30 +23,35 @@
 <!-- Content wrapper start -->
 <div class="content-wrapper">
 
-    <!-- Row start -->
-    <div class="row">
-        <!-- Card start -->
-        <div class="card">
-            <div class="card-header">
-              <div class="card-title">Appointment List</div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="appointmentTable" class="table table-bordered table-hover table-striped" style="width:100%">
-                        <thead>
-                            <th>Date Appointment</th>
-                            <th>Student</th>
-                            <th>Service</th>
-                            <th>Doctor</th>
-                            <th>Time Schedule</th>
-                        </thead>
-                    </table>
-                </div>
-            </div>
+  <!-- Row start -->
+  <div class="row">
+    <!-- Card start -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Appointment List</div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="appointmentTable" class="table table-bordered table-hover table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th>Date Appointment</th>
+                <th>Student</th>
+                <th>Service</th>
+                <th>Doctor</th>
+                <th>Time Schedule</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
         </div>
-        <!-- Card end -->
+      </div>
     </div>
-    <!-- Row end -->
+    <!-- Card end -->
+  </div>
+  <!-- Row end -->
 
 </div>
 <!-- Content wrapper end -->
@@ -61,23 +66,36 @@
     }, 5000);
 
     $('#appointmentTable').DataTable({
-        "ajax": "{% url 'students:list-appointment' %}",
-        "columns": [
-            { "data": "date_appointment" },
-            { "data": "student" },
-            { "data": "service" },
-            { "data": "doctor" },
-            { "data": "time_schedule" }
-        ],
-        "searching": true,
-        "responsive": true,
-        dom: 'Bfrtip',
-        buttons: [
-            'copyHtml5',
-            'excelHtml5',
-            'csvHtml5',
-            'pdfHtml5'
-        ],
+      "ajax": {
+        "url": "{% url 'students:list-appointment' %}",
+        "dataSrc": ""
+      },
+      "columns": [
+        { "data": "date_appointment" },
+        { "data": "student__user__first_name", "defaultContent": "" },
+        { "data": "service__name", "defaultContent": "" },
+        { "data": "doctor__user__first_name", "defaultContent": "" },
+        { "data": "time_schedule", "defaultContent": "" },
+        {
+          "data": null,
+          "defaultContent": "",
+          "render": function (data, type, row) {
+            return  '<a href="/path/to/view/' + row.id + '" class="btn btn-primary btn-sm"><span><i class="bi bi-eye"></span></i></a>' +
+                    '<a href="/path/to/view/' + row.id + '" class="btn btn-success btn-sm"><i class="bi bi-pencil"></i></a>' +
+                    '<a href="/path/to/view/' + row.id + '" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></a>' ;
+          }
+        }
+      ],
+      "searching": true,
+      "responsive": true,
+      dom: 'Bfrtip',
+      buttons: [
+        'copy',
+        'excel',
+        'csv',
+        'pdf',
+        'print'
+      ],
     });
   });
 </script>
