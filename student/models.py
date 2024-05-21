@@ -1,11 +1,12 @@
 from django.db import models
+from django.db.models import UniqueConstraint
 from account.models import Doctor, Student
 from doctor.models import Service
 
 # Create your models here.
 class Appointment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    date_appointment = models.DateField(null=False, blank=False)
+    date_appointment = models.DateField(null=False, blank=False) 
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, null=True, on_delete=models.SET_NULL)
     doctor = models.ForeignKey(Doctor, null=True, on_delete=models.SET_NULL)
@@ -27,6 +28,12 @@ class Appointment(models.Model):
 
     def __str__(self):
         return self.student.studentNumber+"  "+self.date_appointment
+    
+    #Create the contraint: a user should have only one appointment per day
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['date_appointment', 'student'], name='unique_appointment_per_student_per_day')
+        ]
     
 class Enquiry(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
