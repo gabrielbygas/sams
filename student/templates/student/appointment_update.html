@@ -25,7 +25,7 @@
 
     <!-- Row start -->
     <div class="row">
-        <div class="col-sm-6 col-12">
+        <div class="col-sm-6 offset-sm-3 col-12">
 
             <!-- Card start -->
             <div class="card">
@@ -34,7 +34,7 @@
               </div>
               <div class="card-body">
                 <br/>
-                <form class="" method="POST" action="{% url 'students:create-appointment' %}">
+                <form class="" method="POST">
                   {% csrf_token %}
                   <!-- Error messages -->
                   {% if messages or form.non_field_errors or form.errors %}

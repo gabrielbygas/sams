@@ -96,8 +96,8 @@ class AppointmentUpdateView(UpdateView):
     template_name = "student/appointment_update.html"
 
     def get_success_url(self):
-        messages.success(self.request, 'Appointment created successfully!')
-        return reverse("student:home", args=[self.obect.pk])
+        messages.success(self.request, 'Appointment updated successfully!')
+        return reverse("students:update-appointment", args=[self.object.pk])
 
 # Delete Appointment
 class AppointmentDeleteView(DeleteView):
