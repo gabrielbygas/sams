@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+  <title>SAMS - Student Home</title>
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <i class="bi bi-house"></i>
+        <a href="{% url 'home' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'students:home' %}">Student</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:create-appointment' %}">Create Appointment</a></li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+<!-- Content wrapper start -->
+<div class="content-wrapper">
+
+  <!-- Row start -->
+  <div class="row">
+    <!-- Card start -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Appointment List</div>
+      </div>
+      <div class="card-body">
+        APPOINTMENT DETAIL VIEW
+      </div>
+    </div>
+    <!-- Card end -->
+  </div>
+  <!-- Row end -->
+
+</div>
+<!-- Content wrapper end -->
+{% endblock %}
+

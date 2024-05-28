@@ -45,13 +45,15 @@ class AppointmentListView(ListView):
             return Appointment.objects.all().order_by('-date_appointment')
         
     def render_to_response(self, context, **response_kwargs):
-        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest': #to specify an ajax request (copilot-Microsoft help)
             data = list(self.get_queryset().values(
                 'id',
                 'date_appointment', 
-                'student__user__first_name', 
+                'student__user__first_name',
+                'student__user__last_name', 
                 'service__name', 
                 'doctor__user__first_name', 
+                'doctor__user__last_name',
                 'time_schedule'
             ))
             return JsonResponse(data, safe=False)
@@ -94,7 +96,8 @@ class AppointmentUpdateView(UpdateView):
     template_name = "student/appointment_update.html"
 
     def get_success_url(self):
-        return reverse("student:home")
+        messages.success(self.request, 'Appointment created successfully!')
+        return reverse("student:home", args=[self.obect.pk])
 
 # Delete Appointment
 class AppointmentDeleteView(DeleteView):
