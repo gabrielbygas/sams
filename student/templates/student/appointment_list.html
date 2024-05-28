@@ -14,7 +14,7 @@
         <a href="{% url 'home' %}">Home</a>
     </li>
     <li class="breadcrumb-item"><a href="{% url 'students:home' %}">Student</a></li>
-    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:create-appointment' %}">Create Appointment</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:list-appointment' %}">List Appointment</a></li>
   </ol>
 {% endblock %}
 
@@ -72,17 +72,29 @@
       },
       "columns": [
         { "data": "date_appointment" },
-        { "data": "student__user__first_name", "defaultContent": "" },
+        {
+          "data": null,
+          "defaultContent": "",
+          "render": function (data, type, row) {
+              return row.student__user__first_name + " " + row.student__user__last_name;
+          }
+        },
         { "data": "service__name", "defaultContent": "" },
-        { "data": "doctor__user__first_name", "defaultContent": "" },
+        {
+          "data": null,
+          "defaultContent": "",
+          "render": function (data, type, row) {
+              return row.doctor__user__first_name + " " + row.doctor__user__last_name;
+          }
+        },
         { "data": "time_schedule", "defaultContent": "" },
         {
           "data": null,
           "defaultContent": "",
           "render": function (data, type, row) {
-            return  '<a href="/path/to/view/' + row.id + '" class="btn btn-primary btn-sm"><span><i class="bi bi-eye"></span></i></a>' +
-                    '<a href="/path/to/view/' + row.id + '" class="btn btn-success btn-sm"><i class="bi bi-pencil"></i></a>' +
-                    '<a href="/path/to/view/' + row.id + '" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></a>' ;
+            return  '<a href="/students/appointment/view/' + row.id + '/"><span class="badge bg-primary"><i class="bi bi-eye"></i></span></a>' +
+                    '<a href="/students/appointment/update/' + row.id + '/"><span class="badge bg-success"><i class="bi bi-pencil"></i></span></a>' +
+                    '<a href="/students/appointment/delete/' + row.id + '/"><span class="badge bg-danger"><i class="bi bi-trash-fill"></i></span></a>' ;
           }
         }
       ],
