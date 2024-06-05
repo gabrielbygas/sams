@@ -14,7 +14,7 @@
         <a href="{% url 'home' %}">Home</a>
     </li>
     <li class="breadcrumb-item"><a href="{% url 'students:home' %}">Student</a></li>
-    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:create-appointment' %}">Create Appointment</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:view-appointment' pk=appointment.pk %}">Detail Appointment</a></li>
   </ol>
 {% endblock %}
 
@@ -25,16 +25,46 @@
 
   <!-- Row start -->
   <div class="row">
-    <!-- Card start -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Appointment List</div>
+    <div class="col-sm-6 offset-sm-3 col-12">
+      <!-- Card start -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Appointment Detail </div>
+        </div> <br/> <br/>
+        <div class="card-body">
+          <!-- Row start -->
+          <div class="row gx-3">
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="mb-3">Student:  
+                <label for="student" class="form-label">{{ appointment.student }}</label>
+                </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12">
+              <div class="mb-3">Date appointment: 
+                <label for="date_appointment" class="form-label">{{ appointment.date_appointment }}</label>
+              </div>
+            </div> 
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="mb-3">Service:
+                    <label for="service" class="form-label">{{ appointment.service }}</label>
+                </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12">
+              <div class="mb-3">Doctor:
+                <label for="doctor" class="form-label">{{ appointment.doctor }}</label>
+              </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12">
+              <div class="mb-3">Time schedule:  
+                  <label for="time-schedule" class="form-label">{{ appointment.time_schedule }}</label>
+              </div>
+            </div>
+          </div> <br/>
+          <!-- Row end -->
+        </div>
       </div>
-      <div class="card-body">
-        APPOINTMENT DETAIL VIEW
-      </div>
+      <!-- Card end -->
     </div>
-    <!-- Card end -->
   </div>
   <!-- Row end -->
 
