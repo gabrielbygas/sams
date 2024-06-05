@@ -10,13 +10,7 @@
                     <a href="{% url 'students:create-appointment' %}">New</a>
                 </li>
                 <li>
-                    <a href="{% url 'students:list-appointment' %}">History</a>
-                </li>
-                <li>
-                    <a href="#">Reschedule</a>
-                </li>
-                <li>
-                    <a href="#">Cancel</a>
+                    <a href="{% url 'students:list-appointment' %}">View</a>
                 </li>
             </ul>
         </div>
@@ -27,10 +21,20 @@
             <span class="menu-text">Health Report</span>
         </a>
     </li>
-    <li>
+    <li class="sidebar-dropdown">
         <a href="#">
             <i class="bi bi-question-circle"></i>
             <span class="menu-text">Ask Questions</span>
         </a>
+        <div class="sidebar-submenu">
+            <ul>
+                <li>
+                    <a href="{% url 'students:create-enquiry' %}">New</a>
+                </li>
+                <li>
+                    <a href="{% url 'students:list-enquiry' %}">View</a>
+                </li>
+            </ul>
+        </div>
     </li>
 </ul>

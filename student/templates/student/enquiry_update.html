@@ -14,7 +14,7 @@
         <a href="{% url 'home' %}">Home</a>
     </li>
     <li class="breadcrumb-item"><a href="{% url 'students:home' %}">Student</a></li>
-    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:update-appointment' pk=appointment.pk %}">Update Appointment</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:create-enquiry' %}">Ask Question</a></li>
   </ol>
 {% endblock %}
 
@@ -30,7 +30,7 @@
             <!-- Card start -->
             <div class="card">
               <div class="card-header">
-                <div class="card-title">Update an Appointment</div>
+                <div class="card-title">Ask Question</div>
               </div>
               <div class="card-body">
                 <br/>
@@ -76,45 +76,30 @@
                     <div class="col-xl-12 col-sm-12 col-12">
                         <div class="mb-3">
                         <label for="student" class="form-label">{{ form.student.label_tag }}</label>
-                        {% if user.is_student %} <!--if Student-->
+                        {% if user.is_student %}
                           {{ user.first_name }} {{ user.last_name }}
                           <input type="hidden" name="student" value="{{ user.student.id }}">
-                        {% else %} <!--if Receptionist -->
+                        {% else %}
                           {{ form.student  }}
                         {% endif %}
                         </div>
                     </div>
                     <div class="col-xl-12 col-sm-12 col-12">
-                      <div class="mb-3">
-                        <label for="date_appointment" class="form-label">{{ form.date_appointment.label_tag }}</label>
-                        {{ form.date_appointment }}
-                      </div>
-                    </div> 
-                    <div class="col-xl-12 col-sm-12 col-12">
                         <div class="mb-3">
-                            <label for="service" class="form-label">{{ form.service.label_tag }}</label>
-                            {{ form.service }}
+                            <label for="service" class="form-label">{{ form.question.label_tag }}</label>
+                            {{ form.question }}
                         </div>
                     </div>
-                    <div class="col-xl-12 col-sm-12 col-12">
-                      <div class="mb-3">
-                        <label for="doctor" class="form-label">{{ form.doctor.label_tag }}</label>
-                        {{ form.doctor }}
-                      </div>
-                    </div>
-                    <div class="col-xl-12 col-sm-12 col-12">
-                      <div class="mb-3">
-                          <label for="time-schedule" class="form-label">{{ form.time_schedule.label_tag }}</label>
-                          {{ form.time_schedule }}
-                      </div>
-                    </div>
+                    <input type="hidden" name="doctor" value="{{ 1 }}">
+                    <input type="hidden" name="answer" value="">
+                    <input type="hidden" name="is_answering" value="False">
                   </div> <br/>
                   <!-- Row end -->
 
                   <!-- Form actions footer start -->
                   <div class="text-center"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
                     <button type="submit" class="btn btn-primary"><span class="icon"> <i class="bi bi-check-circle"></i></span>Submit</button>&nbsp; &nbsp; &nbsp;
-                    <button type="reset" class="btn btn-danger"><a href="{% url 'students:list-appointment' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
+                    <button type="reset" class="btn btn-danger"><a href="{% url 'students:list-enquiry' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
                   </div><br/>
                   <!-- Form actions footer end -->
                 </form>
@@ -128,48 +113,4 @@
 
 </div>
 <!-- Content wrapper end -->
-{% endblock %}
-
-{% block custom-javascript %}
-<script>
-  // alert setTimeout
-  $(document).ready(function(){
-    setTimeout(function() {
-      $("#auto-close-alert").alert('close');
-    }, 5000);
-
-    //select2
-    $('#id_student').select2();
-    $('#id_service').select2();
-    $('#id_doctor').select2();
-    $('#id_time_schedule').select2();
-
-    // Deactive Doctor select
-    $('#id_doctor').prop('disabled', true);
-
-    //select Doctor dynamically
-    $('#id_service').change(function() {
-      var url = "/doctors/get_doctors/";  
-      var serviceId = $(this).val();
-
-      $.ajax({
-        url: url,
-        data: {
-            'service': serviceId
-        },
-        success: function(data) {
-            // Activate Doctor select
-            $('#id_doctor').prop('disabled', false);
-            $("#id_doctor").html(data);
-        },
-        error: function() {
-          alert("Can't Load Doctors to corresponding service");
-          // Deactivate Doctor select if Ajax fail
-          $('#id_doctor').prop('disabled', true);
-        }
-      });
-    });
-
-  });
-</script>
 {% endblock %}
