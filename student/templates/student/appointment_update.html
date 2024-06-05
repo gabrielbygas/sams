@@ -14,7 +14,7 @@
         <a href="{% url 'home' %}">Home</a>
     </li>
     <li class="breadcrumb-item"><a href="{% url 'students:home' %}">Student</a></li>
-    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:create-appointment' %}">Update Appointment</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:update-appointment' pk=appointment.pk %}">Update Appointment</a></li>
   </ol>
 {% endblock %}
 

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+  <title>SAMS - Student Home</title>
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <i class="bi bi-house"></i>
+        <a href="{% url 'home' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'students:home' %}">Student</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:delete-appointment' pk=appointment.pk %}">Delete Appointment</a></li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+<!-- Content wrapper start -->
+<div class="content-wrapper">
+
+    <!-- Row start -->
+    <div class="row">
+        <div class="col-sm-6 offset-sm-3 col-12">
+
+            <!-- Card start -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Delete Appointment</div>
+              </div>
+              <div class="card-body">
+                <br/>
+                <form class="" method="POST">
+                  {% csrf_token %}
+                  <!-- Error messages -->
+                  {% if messages or form.non_field_errors or form.errors %}
+                    <div class="alert alert-dismissible fade show" role="alert" id="auto-close-alert">
+                      <ul>
+                        {% for message in messages %}
+                          {% if message.tags == 'error' %}
+                              <div class="alert alert-danger">
+                                  <li>{{ message }}</li>
+                              </div>
+                          {% elif message.tags == 'success' %}
+                              <div class="alert alert-success">
+                                  <li>{{ message }}</li>
+                              </div>
+                          {% endif %}
+                        {% endfor %}
+
+                        {% for error in form.non_field_errors %}
+                          <div class="alert alert-danger">
+                              <li>{{ error }}</li>
+                          </div>
+                        {% endfor %}
+
+                        {% for field in form %}
+                          {% for error in field.errors %}
+                              <div class="alert alert-danger">
+                                  <li>{{ error }}</li>
+                              </div>
+                          {% endfor %}
+                        {% endfor %}
+                      </ul>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endif %}
+                  <!-- Error messages -->
+
+                  <!-- Row start -->
+                  <div class="row gx-3">
+                    <p> Do you really want to Delete this appointment: <strong> {{ appointment }} </strong> </p>
+                  </div> <br/>
+                  <!-- Row end -->
+
+                  <!-- Form actions footer start -->
+                  <div class="text-center"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
+                    <button type="submit" class="btn btn-primary"><span class="icon"> <i class="bi bi-check-circle"></i></span>Yes, Delete</button>&nbsp; &nbsp; &nbsp;
+                    <button type="reset" class="btn btn-danger"><a href="{% url 'students:list-appointment' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
+                  </div><br/>
+                  <!-- Form actions footer end -->
+                </form>
+              </div>
+            </div>
+            <!-- Card end -->
+
+        </div>
+    </div>
+    <!-- Row end -->
+
+</div>
+<!-- Content wrapper end -->
+{% endblock %}

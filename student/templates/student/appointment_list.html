@@ -30,7 +30,28 @@
       <div class="card-header">
         <div class="card-title">Appointment List</div>
       </div>
-      <div class="card-body">
+      <div class="card-body"> <br/>
+        <!-- Error messages -->
+        {% if messages %}
+        <div class="alert alert-dismissible fade show" role="alert" id="auto-close-alert">
+          <ul>
+            {% for message in messages %}
+              {% if message.tags == 'error' %}
+                  <div class="alert alert-danger">
+                      <li>{{ message }}</li>
+                  </div>
+              {% elif message.tags == 'success' %}
+                  <div class="alert alert-success">
+                      <li>{{ message }}</li>
+                  </div>
+              {% endif %}
+            {% endfor %}
+          </ul>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+        <!-- Error messages -->
+        
         <div class="table-responsive">
           <table id="appointmentTable" class="table table-bordered table-hover table-striped display nowrap" style="width:100%">
             <thead>

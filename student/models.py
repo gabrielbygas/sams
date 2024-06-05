@@ -27,7 +27,7 @@ class Appointment(models.Model):
     time_schedule = models.CharField(max_length=16, choices=TIME_SCHEDULES)
 
     def __str__(self):
-        return self.student.studentNumber+"  "+self.date_appointment
+        return f"{self.student.user.first_name} {self.student.user.last_name} at {self.date_appointment.strftime('%Y-%m-%d')}"
     
     #Create the contraint: a user should have only one appointment per day
     class Meta:

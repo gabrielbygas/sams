@@ -62,6 +62,8 @@ class AppointmentListView(ListView):
 
 
 # Detail Appointment
+@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_doctor, login_url='students:error-page'), name='dispatch')
 class AppointmentDetailView(DetailView):
     model = Appointment
     context_object_name = "appointment"
@@ -90,6 +92,8 @@ class AppointmentCreateView(CreateView):
         return reverse("students:home")
 
 # Update Appointment
+@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_doctor, login_url='students:error-page'), name='dispatch')
 class AppointmentUpdateView(UpdateView):
     model = Appointment
     form_class = AppointmentForm
@@ -100,9 +104,13 @@ class AppointmentUpdateView(UpdateView):
         return reverse("students:update-appointment", args=[self.object.pk])
 
 # Delete Appointment
+@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_doctor, login_url='students:error-page'), name='dispatch')
 class AppointmentDeleteView(DeleteView):
     model = Appointment
     template_name = "student/appointment_confirm_delete.html"
-
+    context_object_name = "appointment"
+    
     def get_success_url(self):
-        return reverse("student:home")
+        messages.success(self.request, 'Appointment deleted successfully!')
+        return reverse("students:list-appointment")
