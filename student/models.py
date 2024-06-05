@@ -37,7 +37,7 @@ class Appointment(models.Model):
     
 class Enquiry(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, default=1)
     question = models.TextField(max_length=1000)
     answer = models.TextField(max_length=1000, blank=True, null=True)
     is_answering = models.BooleanField(default=False)

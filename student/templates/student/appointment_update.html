@@ -114,7 +114,7 @@
                   <!-- Form actions footer start -->
                   <div class="text-center"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
                     <button type="submit" class="btn btn-primary"><span class="icon"> <i class="bi bi-check-circle"></i></span>Submit</button>&nbsp; &nbsp; &nbsp;
-                    <button type="reset" class="btn btn-danger"><span class="icon"> <i class="bi bi-x-circle"></i></span>Reset</button>
+                    <button type="reset" class="btn btn-danger"><a href="{% url 'students:list-appointment' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
                   </div><br/>
                   <!-- Form actions footer end -->
                 </form>

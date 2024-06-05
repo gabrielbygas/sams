@@ -41,3 +41,15 @@ class AppointmentForm(forms.ModelForm):
             raise ValidationError(_("You already have an appointment on this date."))
         
         return cleaned_data
+
+
+class EnquiryForm(forms.ModelForm):
+    class Meta:
+        model = Enquiry
+        fields = ['student', 'doctor', 'question', 'answer']
+        widgets = {
+            'student': forms.Select(attrs={'class': 'form-control', 'required': True}),
+            'doctor': forms.Select(attrs={'class': 'form-control', 'id': 'id_doctor', 'required': True}),
+            'question': forms.Textarea(attrs={'cols': 80, 'rows': 5, 'class': 'form-control', 'required': True}),
+            'answer': forms.Textarea(attrs={'cols': 80, 'rows': 5, 'class': 'form-control', 'required': True}),
+        }

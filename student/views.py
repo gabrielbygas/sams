@@ -6,7 +6,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView, D
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
 from student.models import Appointment, Enquiry
-from student.forms import AppointmentForm
+from student.forms import AppointmentForm, EnquiryForm
 from account.models import Student
 
 
@@ -113,4 +113,95 @@ class AppointmentDeleteView(DeleteView):
     
     def get_success_url(self):
         messages.success(self.request, 'Appointment deleted successfully!')
+        return reverse("students:list-appointment")
+    
+# List Enquiry
+@method_decorator(login_required, name='dispatch')
+class EnquiryListView(ListView):
+    model = Enquiry
+    context_object_name = "enquirys"
+    template_name = "student/enquiry_list.html"
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student(): #if student
+            student = Student.objects.get(user=user)
+            return Enquiry.objects.filter(student=student).order_by('created_at')
+        else: #if receptionist
+            return Enquiry.objects.all().order_by('created_at')
+        
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest': #to specify an ajax request (copilot-Microsoft help)
+            data = list(self.get_queryset().values(
+                'id', 
+                'student__user__first_name',
+                'student__user__last_name', 
+                'question',
+                'answer', 
+                'doctor__user__first_name', 
+                'doctor__user__last_name',
+                'is_answering',
+                'created_at'
+            ))
+            return JsonResponse(data, safe=False)
+        else:
+            return super().render_to_response(context, **response_kwargs)
+        
+# Detail Enquiry
+@method_decorator(login_required, name='dispatch')
+class EnquiryDetailView(DetailView):
+    model = Enquiry
+    context_object_name = "enquiry"
+    template_name = "student/enquiry_detail.html"
+
+# Create Enquiry
+@method_decorator(login_required, name='dispatch')
+class EnquiryCreateView(CreateView):
+    model = Enquiry
+    form_class = EnquiryForm
+    template_name = "student/enquiry_create.html"
+
+    def form_valid(self, form):
+        user = self.request.user
+        if hasattr(user, 'student'): #if user is student
+            form.instance.student = user.student
+        else: # if user is not student
+            form.instance.student = form.cleaned_data.get('student')
+        return super().form_valid(form)
+
+    
+    def get_success_url(self):
+        messages.success(self.request, 'Enquiry created successfully!')
+        return reverse("students:home")
+    
+# Update Enquiry
+@method_decorator(login_required, name='dispatch')
+class EnquiryUpdateView(UpdateView):
+    model = Enquiry
+    form_class = EnquiryForm
+    template_name = "student/enquiry_update.html"
+
+    def form_valid(self, form):
+        user = self.request.user
+        if hasattr(user, 'student'): #if user is student
+            form.instance.student = user.student
+        else: # if user is not student
+            form.instance.student = form.cleaned_data.get('student')
+        return super().form_valid(form)
+
+    
+    def get_success_url(self):
+        messages.success(self.request, 'Enquiry created successfully!')
+        return reverse("students:home")
+
+
+# Enquiry Delete
+@method_decorator(login_required, name='dispatch')
+class EnquiryDeleteView(DeleteView):
+    model = Enquiry
+    template_name = "student/enquiry_confirm_delete.html"
+    context_object_name = "enquiry"
+    
+    def get_success_url(self):
+        messages.success(self.request, 'Enquiry deleted successfully!')
         return reverse("students:list-appointment")
