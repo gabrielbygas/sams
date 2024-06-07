@@ -30,6 +30,10 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">Enquiry Detail </div>
+          <div class="text-right"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
+            <a href="{% url 'students:update-enquiry' pk=enquiry.pk %}"><span class="badge bg-success"><i class="bi bi-pen-fill"></i> Update</span></a> &ensp;
+            <a href="{% url 'students:list-enquiry' %}"><span class="badge bg-success"><i class="bi bi-eye"></i> Enquiry List</span></a>
+          </div>
         </div> <br/> <br/>
         <div class="card-body">
           <!-- Row start -->

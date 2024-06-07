@@ -31,7 +31,10 @@
             <div class="card">
               <div class="card-header">
                 <div class="card-title">Ask Question</div>
-              </div>
+                <div class="text-right"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
+                  <a href="{% url 'students:list-enquiry' %}"><span class="badge bg-success"><i class="bi bi-eye"></i> Enquiry List</span></a>
+                </div>
+              </div> <br/>
               <div class="card-body">
                 <br/>
                 <form class="" method="POST">
