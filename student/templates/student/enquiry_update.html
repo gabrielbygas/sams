@@ -114,3 +114,18 @@
 </div>
 <!-- Content wrapper end -->
 {% endblock %}
+
+{% block custom-javascript %}
+<script>
+  // alert setTimeout
+  $(document).ready(function(){
+    setTimeout(function() {
+      $("#auto-close-alert").alert('close');
+    }, 5000);
+
+    //select2
+    $('#id_student').select2();
+    $('#id_doctor').select2();
+  });
+</script>
+{% endblock %}

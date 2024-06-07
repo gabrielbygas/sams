@@ -44,4 +44,4 @@ class Enquiry(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Enquiry from {self.student.user.username} to {self.doctor.user.username}"
+        return f"{self.question} asked by {self.student.user.first_name} {self.student.user.last_name}"
