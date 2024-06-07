@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+  <title>SAMS - Student Home</title>
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <i class="bi bi-house"></i>
+        <a href="{% url 'home' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'doctors:home' %}">Student</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'doctors:update-enquiry' pk=enquiry.pk %}">Ask Question</a></li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+<!-- Content wrapper start -->
+<div class="content-wrapper">
+
+    <!-- Row start -->
+    <div class="row">
+        <div class="col-sm-6 offset-sm-3 col-12">
+
+            <!-- Card start -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Ask Question</div>
+                <div class="text-right"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
+                  <a href="{% url 'students:list-enquiry' %}"><span class="badge bg-success"><i class="bi bi-eye"></i> Enquiry List</span></a>
+                </div>
+              </div> <br/>
+              <div class="card-body">
+                <br/>
+                <form class="" method="POST">
+                  {% csrf_token %}
+                  <!-- Error messages -->
+                  {% if messages or form.non_field_errors or form.errors %}
+                    <div class="alert alert-dismissible fade show" role="alert" id="auto-close-alert">
+                      <ul>
+                        {% for message in messages %}
+                          {% if message.tags == 'error' %}
+                              <div class="alert alert-danger">
+                                  <li>{{ message }}</li>
+                              </div>
+                          {% elif message.tags == 'success' %}
+                              <div class="alert alert-success">
+                                  <li>{{ message }}</li>
+                              </div>
+                          {% endif %}
+                        {% endfor %}
+
+                        {% for error in form.non_field_errors %}
+                          <div class="alert alert-danger">
+                              <li>{{ error }}</li>
+                          </div>
+                        {% endfor %}
+
+                        {% for field in form %}
+                          {% for error in field.errors %}
+                              <div class="alert alert-danger">
+                                  <li>{{ error }}</li>
+                              </div>
+                          {% endfor %}
+                        {% endfor %}
+                      </ul>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endif %}
+                  <!-- Error messages -->
+
+                  <!-- Row start -->
+                  <div class="row gx-3">
+                    <div class="col-xl-12 col-sm-12 col-12">
+                        <div class="mb-3">
+                        <label for="student" class="form-label">{{ form.student.label_tag }}</label>
+                        {% if user.is_student %}
+                          {{ user.first_name }} {{ user.last_name }}
+                          <input type="hidden" name="student" value="{{ user.student.id }}">
+                        {% else %}
+                          {{ form.student  }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-xl-12 col-sm-12 col-12">
+                        <div class="mb-3">
+                            <label for="service" class="form-label">{{ form.question.label_tag }}</label>
+                            {{ form.question }}
+                        </div>
+                    </div>
+                    <div class="col-xl-12 col-sm-12 col-12">
+                      <div class="mb-3">
+                          <label for="service" class="form-label">{{ form.answer.label_tag }}</label>
+                          {{ form.answer }}
+                      </div>
+                  </div>
+                    {{ user }}
+                    <input type="hidden" name="doctor" value="{{ user }}">
+                    <input type="hidden" name="is_answering" value="True">
+                  </div> <br/>
+                  <!-- Row end -->
+
+                  <!-- Form actions footer start -->
+                  <div class="text-center"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
+                    <button type="submit" class="btn btn-primary"><span class="icon"> <i class="bi bi-check-circle"></i></span>Submit</button>&nbsp; &nbsp; &nbsp;
+                    <button type="reset" class="btn btn-danger"><a href="{% url 'students:list-enquiry' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
+                  </div><br/>
+                  <!-- Form actions footer end -->
+                </form>
+              </div>
+            </div>
+            <!-- Card end -->
+
+        </div>
+    </div>
+    <!-- Row end -->
+
+</div>
+<!-- Content wrapper end -->
+{% endblock %}
+
+{% block custom-javascript %}
+<script>
+  // alert setTimeout
+  $(document).ready(function(){
+    setTimeout(function() {
+      $("#auto-close-alert").alert('close');
+    }, 5000);
+
+    //select2
+    $('#id_student').select2();
+    $('#id_doctor').select2();
+  });
+</script>
+{% endblock %}
