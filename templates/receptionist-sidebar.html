@@ -66,15 +66,15 @@
     <li class="sidebar-dropdown">
         <a href="#">
             <i class="bi bi-question-circle"></i>
-            <span class="menu-text">Questions</span>
+            <span class="menu-text">Ask Questions</span>
         </a>
         <div class="sidebar-submenu">
             <ul>
                 <li>
-                    <a href="#">New</a>
+                    <a href="{% url 'students:create-enquiry' %}">New</a>
                 </li>
                 <li>
-                    <a href="#">View</a>
+                    <a href="{% url 'students:list-enquiry' %}">View</a>
                 </li>
             </ul>
         </div>

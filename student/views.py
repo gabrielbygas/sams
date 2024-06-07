@@ -156,6 +156,7 @@ class EnquiryDetailView(DetailView):
 
 # Create Enquiry
 @method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_doctor, login_url='students:error-page'), name='dispatch')
 class EnquiryCreateView(CreateView):
     model = Enquiry
     form_class = EnquiryForm
@@ -172,7 +173,7 @@ class EnquiryCreateView(CreateView):
     
     def get_success_url(self):
         messages.success(self.request, 'Enquiry created successfully!')
-        return reverse("students:home")
+        return reverse("students:list-enquiry")
     
 # Update Enquiry
 @method_decorator(login_required, name='dispatch')
@@ -192,11 +193,12 @@ class EnquiryUpdateView(UpdateView):
     
     def get_success_url(self):
         messages.success(self.request, 'Enquiry created successfully!')
-        return reverse("students:home")
+        return reverse("students:list-enquiry")
 
 
 # Enquiry Delete
 @method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_doctor, login_url='students:error-page'), name='dispatch')
 class EnquiryDeleteView(DeleteView):
     model = Enquiry
     template_name = "student/enquiry_confirm_delete.html"
@@ -204,4 +206,4 @@ class EnquiryDeleteView(DeleteView):
     
     def get_success_url(self):
         messages.success(self.request, 'Enquiry deleted successfully!')
-        return reverse("students:list-appointment")
+        return reverse("students:list-enquiry")
