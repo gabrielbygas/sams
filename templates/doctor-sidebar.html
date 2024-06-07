@@ -1,14 +1,34 @@
 <ul>
-    <li>
-        <a href="{% url 'students:list-appointment' %}">
-            <i class="bi bi-card-checklist"></i>
-            <span class="menu-text">Appointment List</span>
+    <li class="sidebar-dropdown">
+        <a href="#">
+            <i class="bi bi-calendar-week"></i>
+            <span class="menu-text">Appointments</span>
         </a>
+        <div class="sidebar-submenu">
+            <ul>
+                <li>
+                    <a href="{% url 'students:create-appointment' %}">New</a>
+                </li>
+                <li>
+                    <a href="{% url 'students:list-appointment' %}">View</a>
+                </li>
+            </ul>
+        </div>
     </li>
-    <li>
-        <a href="{% url 'students:list-enquiry' %}">
-            <i class="bi bi-reply"></i>
-            <span class="menu-text">Reply Questions</span>
+    <li class="sidebar-dropdown">
+        <a href="#">
+            <i class="bi bi-question-circle"></i>
+            <span class="menu-text">Questions</span>
         </a>
+        <div class="sidebar-submenu">
+            <ul>
+                <li>
+                    <a href="{% url 'doctors:list-enquiry' %}">Reply</a>
+                </li>
+                <li>
+                    <a href="{% url 'doctors:list-enquiry-answered' %}">View</a>
+                </li>
+            </ul>
+        </div>
     </li>
 </ul>

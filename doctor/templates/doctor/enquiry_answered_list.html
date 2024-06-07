@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+  <title>SAMS - Student Home</title>
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <i class="bi bi-house"></i>
+        <a href="{% url 'home' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'doctors:home' %}">Doctor</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'doctors:list-enquiry-answered' %}">Questions List</a></li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+<!-- Content wrapper start -->
+<div class="content-wrapper">
+
+  <!-- Row start -->
+  <div class="row">
+    <!-- Card start -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Question List</div>
+      </div>
+      <div class="card-body"> <br/>
+        <!-- Error messages -->
+        {% if messages %}
+        <div class="alert alert-dismissible fade show" role="alert" id="auto-close-alert">
+          <ul>
+            {% for message in messages %}
+              {% if message.tags == 'error' %}
+                  <div class="alert alert-danger">
+                      <li>{{ message }}</li>
+                  </div>
+              {% elif message.tags == 'success' %}
+                  <div class="alert alert-success">
+                      <li>{{ message }}</li>
+                  </div>
+              {% endif %}
+            {% endfor %}
+          </ul>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+        <!-- Error messages -->
+        
+        <div class="table-responsive">
+          <table id="appointmentTable" class="table table-bordered table-hover table-striped display nowrap" style="width:100%">
+            <thead>
+              <tr>
+                <th data-priority="1">Created At</th>
+                <th data-priority="2">Student</th>
+                <th>Question</th>
+                <th>Answer</th>
+                <th>Doctor</th>
+                <th>Is Answering</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Card end -->
+  </div>
+  <!-- Row end -->
+
+</div>
+<!-- Content wrapper end -->
+{% endblock %}
+
+{% block custom-javascript %}
+<script>
+  // alert setTimeout
+  $(document).ready(function(){
+    setTimeout(function() {
+      $("#auto-close-alert").alert('close');
+    }, 5000);
+
+    $('#appointmentTable').DataTable({
+      "ajax": {
+        "url": "{% url 'students:list-enquiry' %}",
+        "dataSrc": ""
+      },
+      "columns": [
+        { "data": "created_at" },
+        {
+          "data": null,
+          "defaultContent": "",
+          "render": function (data, type, row) {
+              return row.student__user__first_name + " " + row.student__user__last_name;
+          }
+        },
+        { "data": "question", "defaultContent": "" },
+        { "data": "answer", "defaultContent": "" },
+        {
+          "data": null,
+          "defaultContent": "",
+          "render": function (data, type, row) {
+              return row.doctor__user__first_name + " " + row.doctor__user__last_name;
+          }
+        },
+        { "data": "is_answering", "defaultContent": "" },
+        {
+          "data": null,
+          "defaultContent": "",
+          "render": function (data, type, row) {
+            return  '<a href="/students/enquiry/view/' + row.id + '/"><span class="badge bg-primary"><i class="bi bi-eye"></i></span></a>' +
+                    '<a href="/students/enquiry/update/' + row.id + '/"><span class="badge bg-success"><i class="bi bi-pencil"></i></span></a>';
+          }
+        }
+      ],
+      "searching": true,
+      "responsive": true,
+      dom: 'Bfrtip',
+      buttons: [
+        'copy',
+        'excel',
+        'csv',
+        'pdf',
+        'print'
+      ],
+    });
+  });
+</script>
+{% endblock %}

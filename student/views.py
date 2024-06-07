@@ -127,8 +127,6 @@ class EnquiryListView(ListView):
         if user.is_student(): #if student
             student = Student.objects.get(user=user)
             return Enquiry.objects.filter(student=student).order_by('created_at')
-        elif user.is_doctor(): #if doctor
-            return Enquiry.objects.filter(is_answering=False).order_by('created_at')
         else: #if receptionist
             return Enquiry.objects.all().order_by('created_at')
         
