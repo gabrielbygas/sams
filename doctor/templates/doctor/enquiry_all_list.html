@@ -14,7 +14,7 @@
         <a href="{% url 'home' %}">Home</a>
     </li>
     <li class="breadcrumb-item"><a href="{% url 'doctors:home' %}">Doctor</a></li>
-    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'doctors:list-enquiry-answered' %}">Questions List</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'doctors:list-enquiry-all' %}">Questions List</a></li>
   </ol>
 {% endblock %}
 
@@ -115,8 +115,8 @@
           "data": null,
           "defaultContent": "",
           "render": function (data, type, row) {
-            return  '<a href="/students/enquiry/view/' + row.id + '/"><span class="badge bg-primary"><i class="bi bi-eye"></i></span></a>' +
-                    '<a href="/students/enquiry/update/' + row.id + '/"><span class="badge bg-success"><i class="bi bi-pencil"></i></span></a>';
+            return  '<a href="/doctors/enquiry/view/' + row.id + '/"><span class="badge bg-primary"><i class="bi bi-eye"></i></span></a>' +
+                    '<a href="/doctors/enquiry/update/' + row.id + '/"><span class="badge bg-success"><i class="bi bi-pencil"></i></span></a>';
           }
         }
       ],

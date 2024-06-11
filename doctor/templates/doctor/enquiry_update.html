@@ -13,7 +13,7 @@
         <i class="bi bi-house"></i>
         <a href="{% url 'home' %}">Home</a>
     </li>
-    <li class="breadcrumb-item"><a href="{% url 'doctors:home' %}">Student</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'doctors:home' %}">Doctor</a></li>
     <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'doctors:update-enquiry' pk=enquiry.pk %}">Ask Question</a></li>
   </ol>
 {% endblock %}
@@ -32,7 +32,7 @@
               <div class="card-header">
                 <div class="card-title">Ask Question</div>
                 <div class="text-right"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
-                  <a href="{% url 'students:list-enquiry' %}"><span class="badge bg-success"><i class="bi bi-eye"></i> Enquiry List</span></a>
+                  <a href="{% url 'doctors:list-enquiry-all' %}"><span class="badge bg-success"><i class="bi bi-eye"></i> Enquiry List</span></a>
                 </div>
               </div> <br/>
               <div class="card-body">
@@ -79,12 +79,7 @@
                     <div class="col-xl-12 col-sm-12 col-12">
                         <div class="mb-3">
                         <label for="student" class="form-label">{{ form.student.label_tag }}</label>
-                        {% if user.is_student %}
-                          {{ user.first_name }} {{ user.last_name }}
-                          <input type="hidden" name="student" value="{{ user.student.id }}">
-                        {% else %}
                           {{ form.student  }}
-                        {% endif %}
                         </div>
                     </div>
                     <div class="col-xl-12 col-sm-12 col-12">
@@ -99,16 +94,19 @@
                           {{ form.answer }}
                       </div>
                   </div>
-                    {{ user }}
-                    <input type="hidden" name="doctor" value="{{ user }}">
-                    <input type="hidden" name="is_answering" value="True">
+                  <input type="hidden" name="is_answering" value="True">
+                  {% if user.is_doctor %}
+                    <input type="hidden" name="doctor" value="{{ user.doctor.id }}">
+                  {% else %}
+                    {{ form.doctor  }}
+                  {% endif %}
                   </div> <br/>
                   <!-- Row end -->
 
                   <!-- Form actions footer start -->
                   <div class="text-center"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
                     <button type="submit" class="btn btn-primary"><span class="icon"> <i class="bi bi-check-circle"></i></span>Submit</button>&nbsp; &nbsp; &nbsp;
-                    <button type="reset" class="btn btn-danger"><a href="{% url 'students:list-enquiry' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
+                    <button type="reset" class="btn btn-danger"><a href="{% url 'doctors:list-enquiry' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
                   </div><br/>
                   <!-- Form actions footer end -->
                 </form>

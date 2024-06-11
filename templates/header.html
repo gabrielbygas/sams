@@ -8,12 +8,12 @@
     <div class="header-actions-container">
         {% if user.is_authenticated %}
         <!-- Header actions start -->
-        <ul class="header-actions" style="margin-right: 20%; margin-top: -1%;">
+        <ul class="header-actions" style="margin-right: 20%; margin-top: -50%;">
             <li class="dropdown">
                 <a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
                     <span class="user-name d-none d-md-block">{{ user.first_name }}</span>
                     <span class="avatar">
-                        <img src="{{ user.photo.url }}" alt="Admin Templates">
+                        <img src="{{ user.photo.url }}" alt="{{ user.first_name }} profile-photo">
                         <span class="status online"></span>
                     </span>
                 </a>
