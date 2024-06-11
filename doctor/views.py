@@ -31,7 +31,7 @@ def doctor_error_page(request):
     context = {}
     if not request.user.is_superuser or request.user.is_student():
         context['error_message'] = "Student is not allowed to access this page."
-    return render(request, "student/doctor_error_page.html", context)
+    return render(request, "doctor/doctor_error_page.html", context)
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(user_passes_test(is_not_student, login_url='doctors:error-page'), name='dispatch')
@@ -41,7 +41,7 @@ class EnquiryListView(ListView):
     template_name = "doctor/enquiry_list.html"
 
     def get_queryset(self):
-        return Enquiry.objects.filter(is_answering=False).order_by('created_at')
+        return Enquiry.objects.filter(is_answering=False).order_by('-created_at')
 
         
     def render_to_response(self, context, **response_kwargs):
@@ -63,13 +63,13 @@ class EnquiryListView(ListView):
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(user_passes_test(is_not_student, login_url='doctors:error-page'), name='dispatch')
-class EnquiryListAnsweredView(ListView):
+class EnquiryListAllView(ListView):
     model = Enquiry
     context_object_name = "enquirys"
-    template_name = "doctor/enquiry_answered_list.html"
+    template_name = "doctor/enquiry_all_list.html"
 
     def get_queryset(self):
-        return Enquiry.objects.filter(is_answering=False).order_by('created_at')
+        return Enquiry.objects.all().order_by('-created_at')
 
         
     def render_to_response(self, context, **response_kwargs):
@@ -97,6 +97,7 @@ class EnquiryUpdateView(UpdateView):
     template_name = "doctor/enquiry_update.html"
 
     def form_valid(self, form):
+        form.instance.is_answering = True
         user = self.request.user
         if hasattr(user, 'student'): #if user is student
             form.instance.student = user.student
@@ -108,3 +109,50 @@ class EnquiryUpdateView(UpdateView):
     def get_success_url(self):
         messages.success(self.request, 'Enquiry created successfully!')
         return reverse("doctors:list-enquiry")
+    
+@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_student, login_url='doctors:error-page'), name='dispatch')
+class EnquiryDetailView(DetailView):
+    model = Enquiry
+    context_object_name = "enquiry"
+    template_name = "doctor/enquiry_detail.html"
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_student, login_url='doctors:error-page'), name='dispatch')
+class AppointmentListView(ListView):
+    model = Appointment
+    context_object_name = "appointments"
+    template_name = "doctor/appointment_list.html"
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_doctor(): #if doctor
+            doctor = Doctor.objects.get(user=user)
+            return Appointment.objects.filter(doctor=doctor).order_by('-date_appointment')
+        else: #if receptionist
+            return Appointment.objects.all().order_by('-date_appointment')
+        
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest': #to specify an ajax request (copilot-Microsoft help)
+            data = list(self.get_queryset().values(
+                'id',
+                'date_appointment', 
+                'student__user__first_name',
+                'student__user__last_name', 
+                'service__name', 
+                'doctor__user__first_name', 
+                'doctor__user__last_name',
+                'time_schedule'
+            ))
+            return JsonResponse(data, safe=False)
+        else:
+            return super().render_to_response(context, **response_kwargs)
+        
+@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(is_not_student, login_url='doctors:error-page'), name='dispatch')
+class AppointmentDetailView(DetailView):
+    model = Appointment
+    context_object_name = "appointment"
+    template_name = "doctor/appointment_detail.html"
+
+

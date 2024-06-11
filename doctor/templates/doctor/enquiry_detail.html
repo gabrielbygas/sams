@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+  <title>SAMS -Enquiry Detail</title>
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <i class="bi bi-house"></i>
+        <a href="{% url 'home' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'doctors:home' %}">Doctor</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'doctors:view-enquiry' pk=enquiry.pk %}">Detail enquiry</a></li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+<!-- Content wrapper start -->
+<div class="content-wrapper">
+
+  <!-- Row start -->
+  <div class="row">
+    <div class="col-sm-6 offset-sm-3 col-12">
+      <!-- Card start -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Enquiry Detail </div>
+          <div class="text-right"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
+            <a href="{% url 'doctors:update-enquiry' pk=enquiry.pk %}"><span class="badge bg-success"><i class="bi bi-pen-fill"></i> Update</span></a> &ensp;
+            <a href="{% url 'doctors:list-enquiry' %}"><span class="badge bg-success"><i class="bi bi-eye"></i> Enquiry List</span></a>
+          </div>
+        </div> <br/> <br/>
+        <div class="card-body">
+          <!-- Row start -->
+          <div class="row gx-3">
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="mb-3">Student:  
+                <label for="student" class="form-label">{{ enquiry.student }}</label>
+                </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12">
+              <div class="mb-3">Question: 
+                <label for="question" class="form-label">{{ enquiry.question }}</label>
+              </div>
+            </div> 
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="mb-3">Answer:
+                    <label for="answer" class="form-label">{{ enquiry.answer }}</label>
+                </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12">
+              <div class="mb-3">Doctor:
+                <label for="doctor" class="form-label">{{ enquiry.doctor }}</label>
+              </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12">
+              <div class="mb-3">Is Answering:  
+                  <label for="is_answering" class="form-label">{{ enquiry.is_answering }}</label>
+              </div>
+            </div>
+          </div> <br/>
+          <!-- Row end -->
+        </div>
+      </div>
+      <!-- Card end -->
+    </div>
+  </div>
+  <!-- Row end -->
+
+</div>
+<!-- Content wrapper end -->
+{% endblock %}
+

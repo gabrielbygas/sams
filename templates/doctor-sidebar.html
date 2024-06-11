@@ -7,10 +7,7 @@
         <div class="sidebar-submenu">
             <ul>
                 <li>
-                    <a href="{% url 'students:create-appointment' %}">New</a>
-                </li>
-                <li>
-                    <a href="{% url 'students:list-appointment' %}">View</a>
+                    <a href="{% url 'doctors:list-appointment' %}">View</a>
                 </li>
             </ul>
         </div>
@@ -26,7 +23,7 @@
                     <a href="{% url 'doctors:list-enquiry' %}">Reply</a>
                 </li>
                 <li>
-                    <a href="{% url 'doctors:list-enquiry-answered' %}">View</a>
+                    <a href="{% url 'doctors:list-enquiry-all' %}">View</a>
                 </li>
             </ul>
         </div>
