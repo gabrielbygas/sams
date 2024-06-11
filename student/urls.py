@@ -7,6 +7,7 @@ app_name = "students"
 
 urlpatterns = [
     path('', home, name="home"),
+    path('home/', home, name="home"),
     path('appointment/create/', AppointmentCreateView.as_view(), name="create-appointment"),
     path('appointment/list/', AppointmentListView.as_view(), name="list-appointment"),
     path('appointment/view/<int:pk>/', AppointmentDetailView.as_view(), name="view-appointment"),

@@ -3,7 +3,7 @@
 
 
 {% block title %}
-  <title>SAMS - Student Home</title>
+  <title>SAMS - Announcement Create</title>
 {% endblock %}
 
 
@@ -13,8 +13,8 @@
         <i class="bi bi-house"></i>
         <a href="{% url 'home' %}">Home</a>
     </li>
-    <li class="breadcrumb-item"><a href="{% url 'students:home' %}">Student</a></li>
-    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:delete-enquiry' pk=enquiry.pk %}">Delete Enquiry</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'receptionists:home' %}">Receptionist</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'receptionists:update-announcement' pk=announcement.pk %}">Update Announcement</a></li>
   </ol>
 {% endblock %}
 
@@ -30,7 +30,10 @@
             <!-- Card start -->
             <div class="card">
               <div class="card-header">
-                <div class="card-title">Delete Enquiry</div>
+                <div class="card-title">Announcement</div>
+                <div class="text-right"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
+                    <a href="{% url 'receptionists:list-announcement' %}"><span class="badge bg-success"><i class="bi bi-eye"></i> Announcement List</span></a>
+                </div>
               </div>
               <div class="card-body">
                 <br/>
@@ -73,14 +76,26 @@
 
                   <!-- Row start -->
                   <div class="row gx-3">
-                    <p> Do you really want to Delete this question: <strong> {{ enquiry }} </strong> </p>
+                    <div class="col-xl-12 col-sm-12 col-12">
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">{{ form.subject.label_tag }}</label>
+                            {{ form.subject }}
+                        </div>
+                    </div>
+                    <div class="col-xl-12 col-sm-12 col-12">
+                        <div class="mb-3">
+                            <label for="message" class="form-label">{{ form.message.label_tag }}</label>
+                            {{ form.message }}
+                        </div>
+                    </div>
+                    <input type="hidden" name="posted_by" value="{{ user.receptionist.id }}">
                   </div> <br/>
                   <!-- Row end -->
 
                   <!-- Form actions footer start -->
                   <div class="text-center"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
-                    <button type="submit" class="btn btn-primary"><span class="icon"> <i class="bi bi-check-circle"></i></span>Yes, Delete</button>&nbsp; &nbsp; &nbsp;
-                    <button type="reset" class="btn btn-danger"><a href="{% url 'students:list-enquiry' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
+                    <button type="submit" class="btn btn-primary"><span class="icon"> <i class="bi bi-check-circle"></i></span>Submit</button>&nbsp; &nbsp; &nbsp;
+                    <button type="reset" class="btn btn-danger"><span class="icon"> <i class="bi bi-x-circle"></i></span>Reset</button>
                   </div><br/>
                   <!-- Form actions footer end -->
                 </form>

@@ -13,8 +13,8 @@
         <i class="bi bi-house"></i>
         <a href="{% url 'home' %}">Home</a>
     </li>
-    <li class="breadcrumb-item"><a href="{% url 'students:home' %}">Student</a></li>
-    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:list-appointment' %}">List Appointment</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'receptionists:home' %}">Receptionist</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'receptionists:list-announcement' %}">Announcements List</a></li>
   </ol>
 {% endblock %}
 
@@ -28,9 +28,9 @@
     <!-- Card start -->
     <div class="card">
       <div class="card-header">
-        <div class="card-title">Appointment List</div>
+        <div class="card-title">Announcement List</div>
         <div class="text-right"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
-          <a href="{% url 'students:create-appointment' %}"><span class="badge bg-success"><i class="bi bi-pen-fill"></i> Create Appointment</span></a>
+            <a href="{% url 'receptionists:create-announcement' %}"><span class="badge bg-success"><i class="bi bi-pen-fill"></i> Create List</span></a>
         </div>
       </div>
       <div class="card-body"> <br/>
@@ -59,11 +59,10 @@
           <table id="appointmentTable" class="table table-bordered table-hover table-striped display nowrap" style="width:100%">
             <thead>
               <tr>
-                <th data-priority="1">Date Appointment</th>
-                <th data-priority="2">Student</th>
-                <th>Service</th>
-                <th>Doctor</th>
-                <th>Time Schedule</th>
+                <th data-priority="1">Date</th>
+                <th data-priority="2">Subject</th>
+                <th>Message</th>
+                <th>Posted By</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -91,34 +90,27 @@
 
     $('#appointmentTable').DataTable({
       "ajax": {
-        "url": "{% url 'students:list-appointment' %}",
+        "url": "{% url 'receptionists:list-announcement' %}",
         "dataSrc": ""
       },
       "columns": [
-        { "data": "date_appointment" },
+        { "data": "date_announcement" },
+        { "data": "subject", "defaultContent": "" },
+        { "data": "message", "defaultContent": "" },
         {
           "data": null,
           "defaultContent": "",
           "render": function (data, type, row) {
-              return row.student__user__first_name + " " + row.student__user__last_name;
+              return row.posted_by__user__first_name + " " + row.posted_by__user__last_name;
           }
         },
-        { "data": "service__name", "defaultContent": "" },
         {
           "data": null,
           "defaultContent": "",
           "render": function (data, type, row) {
-              return row.doctor__user__first_name + " " + row.doctor__user__last_name;
-          }
-        },
-        { "data": "time_schedule", "defaultContent": "" },
-        {
-          "data": null,
-          "defaultContent": "",
-          "render": function (data, type, row) {
-            return  '<a href="/students/appointment/view/' + row.id + '/"><span class="badge bg-primary"><i class="bi bi-eye"></i></span></a>' +
-                    '<a href="/students/appointment/update/' + row.id + '/"><span class="badge bg-success"><i class="bi bi-pencil"></i></span></a>' +
-                    '<a href="/students/appointment/delete/' + row.id + '/"><span class="badge bg-danger"><i class="bi bi-trash-fill"></i></span></a>' ;
+            return  '<a href="/receptionists/announcement/view/' + row.id + '/"><span class="badge bg-primary"><i class="bi bi-eye"></i></span></a>' +
+                    '<a href="/receptionists/announcement/update/' + row.id + '/"><span class="badge bg-success"><i class="bi bi-pencil"></i></span></a>' +
+                    '<a href="/receptionists/announcement/delete/' + row.id + '/"><span class="badge bg-danger"><i class="bi bi-trash-fill"></i></span></a>' ;
           }
         }
       ],
