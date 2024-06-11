@@ -7,4 +7,6 @@ class Announcement(models.Model):
     subject = models.CharField(max_length=100, blank=False)
     message = models.TextField(max_length=1000, blank=False)
     posted_by = models.ForeignKey(Receptionist, on_delete=models.CASCADE)
-    
+
+    def __str__(self):
+        return f"{self.subject}"    

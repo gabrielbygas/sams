@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+  <title>SAMS - receptionist Home</title>
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <i class="bi bi-house"></i>
+        <a href="{% url 'home' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'receptionists:home' %}">Receptionist</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'receptionists:view-announcement' pk=announcement.pk %}">Detail Announcement</a></li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+<!-- Content wrapper start -->
+<div class="content-wrapper">
+
+  <!-- Row start -->
+  <div class="row">
+    <div class="col-sm-6 offset-sm-3 col-12">
+      <!-- Card start -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Announcement Detail </div>
+          <div class="text-right"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
+            <a href="{% url 'receptionists:update-announcement' pk=announcement.pk %}"><span class="badge bg-success"><i class="bi bi-pen-fill"></i> Update</span></a> &ensp;
+            <a href="{% url 'receptionists:list-announcement' %}"><span class="badge bg-success"><i class="bi bi-eye"></i> Announcement List</span></a>
+          </div>
+        </div> <br/> <br/>
+        <div class="card-body">
+          <!-- Row start -->
+          <div class="row gx-3">
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="mb-3">Date:
+                  <label for="date_announcement" class="form-label">{{ announcement.date_announcement }}</label>
+                </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="mb-3">Subject:  
+                <label for="subject" class="form-label">{{ announcement.subject }}</label>
+                </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12">
+              <div class="mb-3">Question: 
+                <label for="message" class="form-label">{{ announcement.message }}</label>
+              </div>
+            </div> 
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="mb-3">Posted By:
+                    <label for="posted_by" class="form-label">{{ announcement.posted_by }}</label>
+                </div>
+            </div>
+          </div> <br/>
+          <!-- Row end -->
+        </div>
+      </div>
+      <!-- Card end -->
+    </div>
+  </div>
+  <!-- Row end -->
+
+</div>
+<!-- Content wrapper end -->
+{% endblock %}
+

@@ -14,7 +14,7 @@
         <a href="{% url 'home' %}">Home</a>
     </li>
     <li class="breadcrumb-item"><a href="{% url 'students:home' %}">Student</a></li>
-    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:delete-enquiry' pk=enquiry.pk %}">Delete Appointment</a></li>
+    <li class="breadcrumb-item breadcrumb-active" aria-current="page"><a href="{% url 'students:delete-enquiry' pk=enquiry.pk %}">Delete Enquiry</a></li>
   </ol>
 {% endblock %}
 
@@ -30,7 +30,7 @@
             <!-- Card start -->
             <div class="card">
               <div class="card-header">
-                <div class="card-title">Delete Appointment</div>
+                <div class="card-title">Delete Enquiry</div>
               </div>
               <div class="card-body">
                 <br/>
@@ -80,7 +80,7 @@
                   <!-- Form actions footer start -->
                   <div class="text-center"> <!-- Utilisez la classe "text-center" pour centrer le contenu -->
                     <button type="submit" class="btn btn-primary"><span class="icon"> <i class="bi bi-check-circle"></i></span>Yes, Delete</button>&nbsp; &nbsp; &nbsp;
-                    <button type="reset" class="btn btn-danger"><a href="{% url 'students:list-appointment' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
+                    <button type="reset" class="btn btn-danger"><a href="{% url 'students:list-enquiry' %}" class="text-white">  <span class="icon"> <i class="bi bi-x-circle"></i></span>No, Cancel </a></button>
                   </div><br/>
                   <!-- Form actions footer end -->
                 </form>
