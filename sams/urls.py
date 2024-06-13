@@ -9,6 +9,7 @@ app_name = "sams"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name="home"),
+    path('home', home, name="home"),
     path('back', back, name='back'),
     path('accounts/', include("account.urls")),
     path('doctors/', include("doctor.urls")),
