@@ -13,4 +13,4 @@ urlpatterns = [
     path('announcement/view/<int:pk>/', AnnouncementDetailView.as_view(), name="view-announcement"),
     path('announcement/update/<int:pk>/', AnnouncementUpdateView.as_view(), name="update-announcement"),
     path('announcement/delete/<int:pk>/', AnnouncementDeleteView.as_view(), name="delete-announcement"),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

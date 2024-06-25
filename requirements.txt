@@ -1,0 +1,10 @@
+asgiref==3.7.2
+Django==5.0.3
+django-livereload-server==0.5.1
+mysql==0.0.3
+mysql-connector-python==8.3.0
+mysqlclient==2.2.4
+pillow==10.2.0
+sqlparse==0.4.4
+tornado==6.4
+typing_extensions==4.10.0

@@ -15,4 +15,4 @@ urlpatterns = [
     path('enquiry/view/<int:pk>/', EnquiryDetailView.as_view(), name="view-enquiry"),
     path('appointment/list/', AppointmentListView.as_view(), name="list-appointment"),
     path('appointment/view/<int:pk>/', AppointmentDetailView.as_view(), name="view-appointment"),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
