@@ -19,4 +19,4 @@ urlpatterns = [
     path('enquiry/update/<int:pk>/', EnquiryUpdateView.as_view(), name="update-enquiry"),
     path('enquiry/delete/<int:pk>/', EnquiryDeleteView.as_view(), name="delete-enquiry"),
     path('error-page/', student_error_page, name="error-page"),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

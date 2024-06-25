@@ -12,5 +12,5 @@ urlpatterns = [
     path('create-receptionist/', create_receptionist, name="create-receptionist"),
     path('create-student/', create_student, name="create-student"),
     path('user-creation-error-page/', user_creation_error_page, name="user_creation_error_page")
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
