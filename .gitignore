@@ -79,9 +79,6 @@ target/
 profile_default/
 ipython_config.py
 
-# pyenv
-# For a library or package, you might want to project versions, but for apps:
-.python-version
 
 # pipenv
 # If you plan to use pipenv, lock files can be committed, but check environment specs

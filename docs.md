@@ -133,3 +133,123 @@ puis `.env` recréé et `collectstatic`.
 - Pour déplacer une branche sans toucher aux fichiers : `git branch -f main <autre-branche>`.
 - Avant toute manip d'historique, copier les fichiers ignorés précieux (`.env`, médias) **hors** du dépôt.
 - Toujours avoir une copie des secrets dans un gestionnaire de mots de passe.
+
+---
+
+## Point 2 — Django 5.2 LTS + uv
+
+### 2.1 — Passer à `uv` (2026-10-26)
+
+#### Le problème que uv résout
+Avant, le projet avait un `requirements.txt` de 10 lignes écrit à la main (ou par `pip freeze`) :
+
+```
+asgiref==3.7.2           ← dépendance de Django, pas du projet
+Django==5.0.3            ← vraie dépendance
+django-livereload-server ← outil de dev, installé en prod aussi
+mysql==0.0.3             ← inutile
+mysql-connector-python   ← inutile (doublon de mysqlclient)
+mysqlclient==2.2.4       ← vraie dépendance
+...
+```
+
+Quatre défauts :
+1. **On ne sait plus ce qu'on a demandé.** Les dépendances directes (Django) et transitives (asgiref, que Django installe tout seul) sont mélangées. Impossible de savoir si `sqlparse` peut être supprimé.
+2. **Rien ne fixe la version de Python.** Le virtualenv avait été créé en 3.10 ; le système est passé en 3.12 et l'a cassé.
+3. **Pas de garantie d'intégrité.** Rien ne prouve que le paquet téléchargé demain est le même qu'aujourd'hui.
+4. **Tout est manuel :** créer le venv, l'activer, `pip install`, `pip freeze`… et `pip` est lent.
+
+`uv` (de la société Astral, qui fait aussi Ruff) remplace en un seul outil `pip`, `venv`, `pip-tools`, `pyenv` et en partie Poetry. Il est écrit en Rust, donc 10 à 100 fois plus rapide que pip.
+
+#### Les 4 éléments d'un projet uv
+
+| Élément | Rôle | Qui l'écrit | Dans Git ? | Équivalent Laravel |
+|---|---|---|---|---|
+| `pyproject.toml` | ce que **tu** demandes, avec des fourchettes de versions | toi, via `uv add` | ✅ | `composer.json` |
+| `uv.lock` | les versions **exactes** de **tout** l'arbre + empreintes sha256 | uv, automatiquement | ✅ | `composer.lock` |
+| `.python-version` | la version de Python du projet | `uv python pin` | ✅ | `"php": "^8.3"` dans `composer.json` |
+| `.venv/` | l'installation réelle, reconstruite à partir de `uv.lock` | `uv sync` | ❌ | `vendor/` |
+
+**Règle d'or :** `.venv/` est jetable. Tu peux le supprimer à tout moment, `uv sync` le recrée à l'identique à partir de `uv.lock`. C'est exactement ce qu'on a fait.
+
+#### Lire `pyproject.toml`
+```toml
+[project]
+name = "sams"                  # nom du projet (sert peu pour une app)
+version = "0.1.0"              # version du projet (idem)
+requires-python = ">=3.12"     # versions de Python acceptées
+dependencies = [               # SEULEMENT les dépendances directes
+    "django>=5.0,<5.1",        # fourchette écrite par toi : toute la série 5.0.x
+    "django-environ>=0.14.0",  # borne basse ajoutée par uv add
+    "mysqlclient>=2.3.0",
+    "pillow>=13.0.0",
+]
+```
+
+Les spécificateurs de version :
+
+| Écriture | Accepte | Usage |
+|---|---|---|
+| `>=5.0,<5.1` | 5.0.0 → 5.0.99, pas 5.1 | rester sur une série (correctifs de sécurité uniquement) |
+| `>=0.14.0` | 0.14.0 et toutes les suivantes | ce qu'écrit `uv add` par défaut |
+| `~=5.2.0` | 5.2.x (équivaut à `>=5.2.0,<5.3`) | forme courte de la première ligne |
+| `==5.0.3` | exactement 5.0.3 | à éviter dans `pyproject.toml` : c'est le rôle du lock |
+
+**Pourquoi Django est passé de 5.0.3 à 5.0.14 :** la fourchette `>=5.0,<5.1` autorise toute la série, et uv a pris le dernier correctif. Ce sont 11 versions de **correctifs de sécurité et de bugs**, sans changement de fonctionnalités : c'est une bonne chose.
+
+#### Lire `uv.lock`
+```toml
+[[package]]
+name = "django"
+version = "5.0.14"                                   # version EXACTE choisie
+dependencies = [
+    { name = "asgiref" },
+    { name = "sqlparse" },
+    { name = "tzdata", marker = "sys_platform == 'win32'" },   # seulement sous Windows
+]
+wheels = [{ url = "...", hash = "sha256:e762bef8…" }]  # empreinte : uv refuse un fichier modifié
+```
+- Le lock a **8** entrées alors que `uv pip list` montre **6** paquets : `sams` est le projet lui-même, et `tzdata` n'est installé que sous Windows (`marker`). Le lock décrit **toutes** les plateformes ; le `.venv` ne contient que ce qu'il faut pour ta machine.
+- On ne modifie **jamais** `uv.lock` à la main.
+
+#### Directes vs transitives : `uv tree`
+```
+sams v0.1.0
+├── django v5.0.14          ← direct (dans pyproject.toml)
+│   ├── asgiref v3.13.0     ← transitif : Django en a besoin, pas toi
+│   └── sqlparse v0.6.0     ← transitif
+├── django-environ v0.14.0
+├── mysqlclient v2.3.0
+└── pillow v13.0.0
+```
+Si un jour tu retires Django, uv retire aussi `asgiref` et `sqlparse`. Avec `requirements.txt`, ils seraient restés pour toujours.
+
+#### Ce qu'on a fait, commande par commande
+| Commande | Effet |
+|---|---|
+| `uv init --bare --python 3.12` | crée **seulement** `pyproject.toml` (sans fichier exemple ni README) |
+| `uv python pin 3.12` | crée `.python-version` ; uv téléchargera ce Python s'il manque |
+| `uv add "django>=5.0,<5.1" django-environ mysqlclient pillow` | écrit dans `pyproject.toml` → calcule `uv.lock` → installe dans `.venv` |
+| `rm -rf .venv && uv sync` | repart de zéro : installe **exactement** le lock, rien d'autre |
+| `uv pip list` | ce qui est réellement installé |
+| `uv run python manage.py check` | lance la commande dans `.venv`, sans `source .venv/bin/activate` |
+| `git rm requirements.txt` | plus de source de vérité en double |
+
+#### Aide-mémoire du quotidien
+| Je veux… | pip (avant) | uv (maintenant) |
+|---|---|---|
+| installer le projet après un `git clone` | `python -m venv .venv && source … && pip install -r requirements.txt` | `uv sync` |
+| ajouter un paquet | `pip install X && pip freeze > requirements.txt` | `uv add X` |
+| ajouter un outil de dev seulement | (pas de séparation) | `uv add --dev X` |
+| retirer un paquet | `pip uninstall X` + éditer le fichier à la main | `uv remove X` |
+| mettre à jour un paquet dans sa fourchette | `pip install -U X` + freeze | `uv lock --upgrade-package X && uv sync` |
+| lancer une commande | activer le venv puis `python …` | `uv run python …` |
+| voir l'arbre | — | `uv tree` |
+
+#### ⚠️ Piège rencontré : `.python-version` ignoré
+Le `.gitignore` copié du modèle GitHub contient `.python-version` (ligne 84). Son commentaire l'explique : c'est utile pour une **bibliothèque** (testée sur plusieurs versions de Python), mais pour une **application**, la version de Python fait partie du projet et doit être commitée. Sinon, un collègue (ou le CI, ou Docker) prendrait une autre version.
+
+#### Explication en 3 niveaux
+1. *Simple :* `pyproject.toml` est ta **liste de courses** (« du lait, n'importe quelle marque »). `uv.lock` est le **ticket de caisse** (« lait Natrel 2 %, 2 L, code-barres 123… »). Avec le ticket, n'importe qui rachète exactement les mêmes produits. `.venv` est le **frigo** : on peut le vider et le remplir de nouveau à partir du ticket.
+2. *Intermédiaire :* on sépare **l'intention** (fourchettes dans `pyproject.toml`) de **la résolution** (versions exactes dans `uv.lock`). Les mises à jour deviennent des décisions explicites (`uv lock --upgrade`) et visibles dans un diff Git, au lieu d'arriver par surprise à la prochaine installation. Les dépendances de dev (`--dev`) ne sont pas installées en prod (`uv sync --no-dev`).
+3. *Expert :* `pyproject.toml` suit les standards PEP 621 (métadonnées) et PEP 508 (spécificateurs et *markers*). Le lock est **universel** : il résout l'arbre pour toutes les plateformes et versions de Python couvertes par `requires-python`, puis `uv sync` n'installe que le sous-ensemble utile. Les empreintes sha256 protègent contre la substitution de paquets (attaque de la chaîne d'approvisionnement). En CI et en Docker, `uv sync --frozen` échoue si le lock n'est plus à jour par rapport à `pyproject.toml` : le build est reproductible ou il échoue, jamais entre les deux.

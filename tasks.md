@@ -25,7 +25,7 @@ Déplacé au point 2 : nettoyage des dépendances (`mysql`, `mysql-connector-pyt
 ### Point 2 — Django 5.2 LTS + uv (branche `chore/django-5.2`)
 Une étape à la fois : d'abord changer l'outil (uv) à version égale, **puis** monter les versions. Si quelque chose casse, on sait quelle étape en est la cause.
 
-1. [ ] ⏳ **En cours** — Projet `uv` à version égale (Django 5.0, Python 3.12) : `pyproject.toml` + `uv.lock` + `.python-version` (à retirer du `.gitignore`), seulement les vraies dépendances (`django`, `django-environ`, `mysqlclient`, `pillow`), retrait de `livereload` (`INSTALLED_APPS` + middleware), suppression de `requirements.txt`.
+1. [ ] ⏳ **Presque fait** — Projet `uv` à version égale. Commit `76277d9` : `pyproject.toml` + `uv.lock`, 4 dépendances directes (Django 5.0.14, django-environ 0.14.0, mysqlclient 2.3.0, pillow 13.0.0), livereload retiré, `requirements.txt` supprimé, `check` OK. Expliqué dans `docs.md`. **Reste : `.python-version` toujours ignoré (ligne 84 du `.gitignore`), donc pas commité.**
 2. [ ] Monter à **Django 5.2 LTS + Python 3.13** : `uv python pin 3.13`, `uv add "django>=5.2,<5.3"`, `python -Wd manage.py check`, `makemigrations --check --dry-run`, test manuel des 3 rôles.
 3. [ ] Outils de dev : `uv add --dev ruff pip-audit`, config Ruff dans `pyproject.toml`, premier `pip-audit` et premier `ruff check` (lecture des résultats, pas de correction de masse).
 4. [ ] Finaliser : `CLAUDE.md` (stack + commandes), `docs.md`, merge dans `main`, push.
