@@ -4,14 +4,21 @@ Méthode : **Junior** (Gabriel code, Claude oriente). Rien n'est « Done » sans
 
 ## Pending
 
-### Point 1 — Hygiène du dépôt (avant le 31 oct.) 🔴 sécurité
+### Point 1 — Hygiène du dépôt ✅ terminé le 2026-10-26 (à valider par Gabriel)
 Ordre choisi : on sort d'abord les secrets du code, **puis** on les change, pour que les nouveaux ne passent jamais par Git.
 
 1. [x] Créer un `.gitignore` (modèle Python de GitHub adapté : `staticfiles/`, `mediafiles/`). Vérifié avec `git check-ignore --no-index` le 2026-10-26.
 2. [x] Retirer du suivi Git sans supprimer en local : virtualenv, `staticfiles/`, `mediafiles/`, `.vscode/`, `db.sqlite3`, `__pycache__/` (7 045 fichiers). Commit `c5d0a83`.
 3. [x] Virtualenv recréé en `.venv/` (l'ancien était cassé), vrai fichier `.env` + `.env.example`, `settings.py` lit tout via `django-environ`. Commit `ba6afe5`. Migrations appliquées en local (34), MLD de `CLAUDE.md` mis à jour.
 4. [x] Rotation des secrets (2026-10-26) : nouvel utilisateur `djangouser` (droits limités à `sams.*` et `test_sams.*`, sans `GRANT OPTION`), nouveau mot de passe, ancien utilisateur `gabriel` supprimé, nouvelle `SECRET_KEY` (`token_urlsafe`). Tout est dans `.env` uniquement. Hors projet, à faire : vérifier les droits de `laraveluser`.
-5. [ ] ⏳ **En cours** — **Nettoyage de l'historique Git** (décidé par Gabriel le 2026-10-26, priorité sécurité) : avec `git filter-repo`, effacer de tous les commits les anciens secrets de `sams/settings.py`, les photos de `mediafiles/`, `db.sqlite3`, le virtualenv et `staticfiles/`. Puis force-push vers GitHub (par Gabriel). Se fait **après** 1.4 et sur un clone de sauvegarde.
+5. [x] Nettoyage de l'historique Git (2026-10-26) : sauvegarde, `git filter-repo` (chemins + secrets), force push (`main` = `6c0c52c`), dossier local aligné et purgé (`.git` : 32 Mo → 1,5 Mo). Forks : 0.
+   - Incident : le `git switch main` de l'étape 0 a écrasé les fichiers ignorés. Restaurés : `mediafiles/` (12 photos) et `.vscode/` depuis la sauvegarde, `.env` recréé, `collectstatic` refait, connexion DB OK.
+
+**Suivi hors code (Gabriel)**
+- [ ] Demander à GitHub Support de purger les anciens commits encore accessibles par leur identifiant (ex. `github.com/gabrielbygas/sams/commit/f136ddd`). Liste : `git -C ~/backups/sams-avant-filter-repo.git log --all --format=%H > ~/anciens-commits.txt`.
+- [ ] Après la réponse de GitHub : supprimer `~/backups/sams-avant-filter-repo.git` et `~/anciens-commits.txt`.
+- [ ] Vérifier les droits de `laraveluser` (`SHOW GRANTS`).
+- [ ] Ranger les secrets de `.env` dans un gestionnaire de mots de passe.
 
 Déplacé au point 2 : nettoyage des dépendances (`mysql`, `mysql-connector-python` inutiles avec `mysqlclient`) et passage à `uv` + `pyproject.toml`.
 
