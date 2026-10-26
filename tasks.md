@@ -8,10 +8,10 @@ Méthode : **Junior** (Gabriel code, Claude oriente). Rien n'est « Done » sans
 Ordre choisi : on sort d'abord les secrets du code, **puis** on les change, pour que les nouveaux ne passent jamais par Git.
 
 1. [x] Créer un `.gitignore` (modèle Python de GitHub adapté : `staticfiles/`, `mediafiles/`). Vérifié avec `git check-ignore --no-index` le 2026-10-26.
-2. [ ] ⏳ **Presque fait** — Retirer du suivi Git sans supprimer en local. Commit `c897d8e` : `.env/`, `staticfiles/`, `mediafiles/`, `.vscode/`, `db.sqlite3` retirés (6 993 fichiers). Les 52 `__pycache__/` sont retirés de l'index (staged) : **reste `git commit --amend --no-edit`.**
-3. [ ] ⏳ **Presque fait** (relu le 2026-10-26) — `.venv/` créé, ancien `.env/` supprimé, `settings.py` lit tout via `django-environ`, `check` OK. **Reste : corriger le format de `.env.example`, réactiver le bon virtualenv, commit.** — **Recréer** le virtualenv en `.venv/` (l'ancien `.env/` est cassé : créé pour Python 3.10 dans un autre projet, `shis`, alors que le système est en 3.12 — un virtualenv ne se déplace pas), supprimer `.env/`, créer un vrai fichier `.env` + `.env.example`, lire `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` et la config MySQL via `django-environ`.
-4. [ ] **Rotation des secrets** : nouveau mot de passe pour l'utilisateur MySQL, nouvelle `SECRET_KEY`, écrits uniquement dans `.env`.
-5. [ ] **Nettoyage de l'historique Git** (décidé par Gabriel le 2026-10-26, priorité sécurité) : avec `git filter-repo`, effacer de tous les commits les anciens secrets de `sams/settings.py`, les photos de `mediafiles/`, `db.sqlite3`, le virtualenv et `staticfiles/`. Puis force-push vers GitHub (par Gabriel). Se fait **après** 1.4 et sur un clone de sauvegarde.
+2. [x] Retirer du suivi Git sans supprimer en local : virtualenv, `staticfiles/`, `mediafiles/`, `.vscode/`, `db.sqlite3`, `__pycache__/` (7 045 fichiers). Commit `c5d0a83`.
+3. [x] Virtualenv recréé en `.venv/` (l'ancien était cassé), vrai fichier `.env` + `.env.example`, `settings.py` lit tout via `django-environ`. Commit `ba6afe5`. Migrations appliquées en local (34), MLD de `CLAUDE.md` mis à jour.
+4. [x] Rotation des secrets (2026-10-26) : nouvel utilisateur `djangouser` (droits limités à `sams.*` et `test_sams.*`, sans `GRANT OPTION`), nouveau mot de passe, ancien utilisateur `gabriel` supprimé, nouvelle `SECRET_KEY` (`token_urlsafe`). Tout est dans `.env` uniquement. Hors projet, à faire : vérifier les droits de `laraveluser`.
+5. [ ] ⏳ **En cours** — **Nettoyage de l'historique Git** (décidé par Gabriel le 2026-10-26, priorité sécurité) : avec `git filter-repo`, effacer de tous les commits les anciens secrets de `sams/settings.py`, les photos de `mediafiles/`, `db.sqlite3`, le virtualenv et `staticfiles/`. Puis force-push vers GitHub (par Gabriel). Se fait **après** 1.4 et sur un clone de sauvegarde.
 
 Déplacé au point 2 : nettoyage des dépendances (`mysql`, `mysql-connector-python` inutiles avec `mysqlclient`) et passage à `uv` + `pyproject.toml`.
 
@@ -23,7 +23,7 @@ Déplacé au point 2 : nettoyage des dépendances (`mysql`, `mysql-connector-pyt
 6. Permissions par rôle (étudiant / médecin / réception) + tests.
 7. Tests : `pytest-django` + `factory_boy`, couverture des réservations.
 8. Front : template partials + HTMX pour la prise de rendez-vous.
-9. Docker (web + MySQL 8.4 + redis) et `docker compose`.
+9. Docker (web + MariaDB 10.11 + redis) et `docker compose`.
 10. CI/CD GitHub Actions (ruff, migrations check, tests, déploiement).
 
 ## Done

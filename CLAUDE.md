@@ -11,7 +11,8 @@
 Gestion des rendez-vous d'un service de santé étudiant : les étudiants prennent rendez-vous (service, médecin, créneau), les médecins gèrent leurs rendez-vous, la réception publie des annonces.
 
 - Dépôt : https://github.com/gabrielbygas/sams (branche `main`)
-- Stack actuelle : Django 5.0.3, MySQL (mysqlclient), Pillow, templates Django.
+- Stack actuelle : Django 5.0.3, **MariaDB 10.11** (driver `mysqlclient`, `ENGINE = django.db.backends.mysql`), Pillow, templates Django.
+- Utilisateur DB : `djangouser`, droits limités aux bases `sams` et `test_sams`.
 - Cible de la refonte : **Django 5.2 LTS** + Python 3.13, Docker, CI/CD GitHub Actions (voir `tasks.md`).
 
 ## Structure actuelle
@@ -25,33 +26,63 @@ Gestion des rendez-vous d'un service de santé étudiant : les étudiants prenne
 | `templates/`, `staticfiles/`, `mediafiles/` | gabarits, statiques collectés, uploads |
 | `.env/` | ⚠️ c'est un **virtualenv**, pas un fichier de variables |
 
-## MLD (d'après les `models.py` au 2026-10-26 — à confirmer après la 1re migration)
+## MLD (schéma réel MariaDB après `migrate`, 2026-10-26 — 34 migrations appliquées)
 
 ```mermaid
 erDiagram
-    CustomUser ||--o| Student : "user (1-1)"
-    CustomUser ||--o| Doctor : "user (1-1)"
-    CustomUser ||--o| Receptionist : "user (1-1)"
-    Doctor }o--o{ Service : "service (M2M)"
-    Student ||--o{ Appointment : "student (CASCADE)"
-    Service |o--o{ Appointment : "service (SET_NULL)"
-    Doctor |o--o{ Appointment : "doctor (SET_NULL)"
-    Student ||--o{ Enquiry : "student (CASCADE)"
-    Doctor ||--o{ Enquiry : "doctor (CASCADE)"
-    Receptionist ||--o{ Announcement : "posted_by (CASCADE)"
+    account_customuser ||--o| account_student : "user_id (1-1, CASCADE)"
+    account_customuser ||--o| account_doctor : "user_id (1-1, CASCADE)"
+    account_customuser ||--o| account_receptionist : "user_id (1-1, CASCADE)"
+    account_doctor ||--o{ account_doctor_service : "doctor_id"
+    doctor_service ||--o{ account_doctor_service : "service_id"
+    account_student ||--o{ student_appointment : "student_id (CASCADE)"
+    doctor_service |o--o{ student_appointment : "service_id (SET NULL)"
+    account_doctor |o--o{ student_appointment : "doctor_id (SET NULL)"
+    account_student ||--o{ student_enquiry : "student_id (CASCADE)"
+    account_doctor ||--o{ student_enquiry : "doctor_id (CASCADE)"
+    account_receptionist ||--o{ receptionist_announcement : "posted_by_id (CASCADE)"
 
-    CustomUser {
+    account_customuser {
         int id PK
         string email UK
+        string password
         string first_name
         string last_name
         date dob
         string phone
         string photo
         string sex
+        bool is_active
+        bool is_staff
+        bool is_superuser
+        datetime last_login
         datetime created_at
     }
-    Appointment {
+    account_student {
+        int id PK
+        int user_id FK,UK
+        string studentNumber UK
+    }
+    account_doctor {
+        int id PK
+        int user_id FK,UK
+        string doctorNumber UK
+    }
+    account_receptionist {
+        int id PK
+        int user_id FK,UK
+        string receptionistNumber UK
+    }
+    doctor_service {
+        int id PK
+        string name UK
+    }
+    account_doctor_service {
+        int id PK
+        int doctor_id FK
+        int service_id FK
+    }
+    student_appointment {
         int id PK
         date date_appointment
         string time_schedule
@@ -60,8 +91,24 @@ erDiagram
         int doctor_id FK
         datetime created_at
     }
+    student_enquiry {
+        int id PK
+        string question
+        string answer
+        bool is_answering
+        int student_id FK
+        int doctor_id FK
+        datetime created_at
+    }
+    receptionist_announcement {
+        int id PK
+        date date_announcement
+        string subject
+        string message
+        int posted_by_id FK
+    }
 ```
-Contrainte : `unique_appointment_per_student_per_day` (`date_appointment`, `student`).
+Contraintes uniques : `unique_appointment_per_student_per_day` (`date_appointment`, `student_id`) ; (`doctor_id`, `service_id`) sur la table M2M.
 
 ## Contact
 Gabriel KALALA 🇨🇩 — gabrielkalala@protonmail.com — https://gabrielkalala.com — https://github.com/gabrielbygas
