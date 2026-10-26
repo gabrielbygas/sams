@@ -11,9 +11,25 @@
 Gestion des rendez-vous d'un service de santé étudiant : les étudiants prennent rendez-vous (service, médecin, créneau), les médecins gèrent leurs rendez-vous, la réception publie des annonces.
 
 - Dépôt : https://github.com/gabrielbygas/sams (branche `main`)
-- Stack actuelle : Django 5.0.3, **MariaDB 10.11** (driver `mysqlclient`, `ENGINE = django.db.backends.mysql`), Pillow, templates Django.
+- Stack : **Python 3.13 + Django 5.2 LTS** (support jusqu'à avril 2028), **MariaDB 10.11** (driver `mysqlclient`, `ENGINE = django.db.backends.mysql`), Pillow, templates Django.
+- Dépendances : **uv** (`pyproject.toml` + `uv.lock` + `.python-version`). Dev : Ruff, pip-audit.
+- Config : variables d'environnement dans `.env` (jamais commité), lues par `django-environ` ; modèle dans `.env.example`.
 - Utilisateur DB : `djangouser`, droits limités aux bases `sams` et `test_sams`.
-- Cible de la refonte : **Django 5.2 LTS** + Python 3.13, Docker, CI/CD GitHub Actions (voir `tasks.md`).
+- Suite de la refonte : comptes et rôles (point 3), Docker, CI/CD GitHub Actions (voir `tasks.md`).
+- Règle métier : **un utilisateur = un seul rôle** (étudiant, médecin ou réceptionniste) ; le superuser a accès à tout.
+
+## Commandes
+```bash
+uv sync                                          # installer / recréer .venv à partir de uv.lock
+uv run python manage.py runserver
+uv run python -Wd manage.py check                # avec les avertissements de dépréciation
+uv run python manage.py makemigrations --check --dry-run
+uv run python manage.py migrate
+uv run ruff check . --statistics                 # lint
+uv run ruff format --check .                     # formatage (pas encore appliqué : début du point 3)
+uv run pip-audit                                 # vulnérabilités connues des dépendances
+uv add <paquet> / uv add --dev <outil> / uv remove <paquet>
+```
 
 ## Structure actuelle
 | Dossier | Rôle |
@@ -23,8 +39,11 @@ Gestion des rendez-vous d'un service de santé étudiant : les étudiants prenne
 | `student/` | `Appointment`, `Enquiry` |
 | `doctor/` | `Service` |
 | `receptionist/` | `Announcement` |
-| `templates/`, `staticfiles/`, `mediafiles/` | gabarits, statiques collectés, uploads |
-| `.env/` | ⚠️ c'est un **virtualenv**, pas un fichier de variables |
+| `templates/` | gabarits communs (`header.html`, `sidebar.html`…) |
+| `sams/static/` | sources des fichiers statiques (suivies par Git) |
+| `staticfiles/`, `mediafiles/` | statiques collectés (`collectstatic`), uploads — ignorés par Git |
+| `.venv/` | virtualenv géré par uv — ignoré par Git |
+| `.env` | secrets et config locale — ignoré par Git |
 
 ## MLD (schéma réel MariaDB après `migrate`, 2026-10-26 — 34 migrations appliquées)
 

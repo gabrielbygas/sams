@@ -253,3 +253,76 @@ Le `.gitignore` copié du modèle GitHub contient `.python-version` (ligne 84). 
 1. *Simple :* `pyproject.toml` est ta **liste de courses** (« du lait, n'importe quelle marque »). `uv.lock` est le **ticket de caisse** (« lait Natrel 2 %, 2 L, code-barres 123… »). Avec le ticket, n'importe qui rachète exactement les mêmes produits. `.venv` est le **frigo** : on peut le vider et le remplir de nouveau à partir du ticket.
 2. *Intermédiaire :* on sépare **l'intention** (fourchettes dans `pyproject.toml`) de **la résolution** (versions exactes dans `uv.lock`). Les mises à jour deviennent des décisions explicites (`uv lock --upgrade`) et visibles dans un diff Git, au lieu d'arriver par surprise à la prochaine installation. Les dépendances de dev (`--dev`) ne sont pas installées en prod (`uv sync --no-dev`).
 3. *Expert :* `pyproject.toml` suit les standards PEP 621 (métadonnées) et PEP 508 (spécificateurs et *markers*). Le lock est **universel** : il résout l'arbre pour toutes les plateformes et versions de Python couvertes par `requires-python`, puis `uv sync` n'installe que le sous-ensemble utile. Les empreintes sha256 protègent contre la substitution de paquets (attaque de la chaîne d'approvisionnement). En CI et en Docker, `uv sync --frozen` échoue si le lock n'est plus à jour par rapport à `pyproject.toml` : le build est reproductible ou il échoue, jamais entre les deux.
+
+### 2.2 — Django 5.2 LTS + Python 3.13 (2026-10-26)
+
+**Pourquoi en deux temps (2.1 puis 2.2) :** changer d'outil **et** de versions en même temps, c'est ne plus savoir laquelle des deux étapes a cassé le projet. Une variable à la fois.
+
+**Pourquoi 5.2 LTS plutôt que 6.1 :** une LTS (*Long Term Support*) reçoit les correctifs de sécurité pendant environ 3 ans (5.2 : jusqu'en avril 2028), contre environ 16 mois pour une version normale. Pour une app qu'on veut stable, c'est moins de montées de version.
+
+```bash
+uv python pin 3.13                 # .python-version → 3.13 (uv télécharge Python s'il manque)
+# pyproject.toml, à la main : requires-python = ">=3.13"
+uv add "django>=5.2,<5.3"          # remplace la fourchette ; uv.lock recalculé
+uv sync                            # .venv en 3.12 ≠ 3.13 demandé → uv le recrée tout seul
+```
+
+Vérifications d'une montée de version, **dans cet ordre** :
+
+| Commande | Ce qu'elle prouve | Résultat SAMS |
+|---|---|---|
+| `uv run python -Wd manage.py check` | config valide ; `-Wd` affiche les dépréciations, cachées par défaut | 0 problème, 0 avertissement |
+| `makemigrations --check --dry-run` | la nouvelle version ne demande pas de modifier les modèles | `No changes detected` |
+| `migrate` | les apps de Django (`auth`, `admin`…) n'ont pas de nouvelles migrations | rien à appliquer |
+| test manuel des 3 rôles avec `runserver -Wd` | les écrans marchent ; les dépréciations s'affichent quand le code concerné s'exécute | OK |
+
+**Lire les notes de version avant :** sur https://docs.djangoproject.com/en/5.2/releases/5.2/, la section *Backwards incompatible changes*. Pour SAMS, seul point à vérifier : les connexions MySQL/MariaDB passent en `utf8mb4` (vrai UTF-8, émojis compris). La base l'était déjà :
+```sql
+SELECT @@character_set_database;   -- utf8mb4
+```
+
+**Pourquoi la connexion était impossible :** les comptes créés dans l'admin avaient leur mot de passe **en clair**, parce que `CustomUserAdmin` hérite de `ModelAdmin`, qui enregistre le champ tel quel. Django hache le mot de passe saisi puis compare : une valeur en clair ne correspond jamais. Contournement : `manage.py changepassword <email>`, qui hache. Correctif : point 3.1.
+
+### 2.3 — Ruff et pip-audit (2026-10-26)
+
+```bash
+uv add --dev ruff pip-audit        # groupe "dev" : absent en prod (uv sync --no-dev)
+```
+```toml
+[tool.ruff]
+target-version = "py313"           # propose la syntaxe moderne
+line-length = 100
+extend-exclude = ["*/migrations/*"]  # fichiers générés par Django
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ"]
+```
+
+| Famille | Détecte | Exemple dans SAMS |
+|---|---|---|
+| `E` | style (pycodestyle) | `E501` ligne > 100 colonnes (64) |
+| `F` | bugs évidents (pyflakes) | `F401` import inutile (25), `F811` nom redéfini (1) |
+| `I` | ordre des imports (isort) | `I001` (22) |
+| `B` | bugs probables (bugbear) | — |
+| `UP` | syntaxe dépassée (pyupgrade) | — |
+| `DJ` | mauvaises pratiques Django | `DJ001` `CharField(null=True)` (5) : deux « vides » possibles, `NULL` et `""` → utiliser `blank=True` seul ; `DJ012` ordre des éléments d'un modèle (2) |
+
+Commandes :
+```bash
+uv run ruff check . --statistics   # résumé par règle
+uv run ruff rule DJ001             # explication d'une règle
+uv run ruff check --fix .          # corrige ce qui est marqué [*] (sans risque)
+uv run ruff format --check .       # montre sans modifier
+uv run pip-audit                   # compare les versions installées à la base des CVE connues
+```
+
+**Linter ≠ formateur :**
+- `ruff check` cherche des **problèmes** (un import inutile peut cacher une erreur).
+- `ruff format` impose un **style** (guillemets doubles, coupures de lignes), sans rien changer au comportement.
+
+**Pourquoi le formatage dans un commit séparé :** `ruff format` touche 30 fichiers. Mélangé à un correctif, ce diff noierait les 3 lignes qui comptent, et la revue deviendrait impossible. Un commit « Apply Ruff formatting » isolé se relit en un coup d'œil (« rien que du style ») et peut être ignoré par `git blame` (`.git-blame-ignore-revs`).
+
+**3 niveaux**
+1. *Simple :* Ruff est un correcteur d'orthographe pour le code ; pip-audit vérifie qu'aucune pièce du projet n'est rappelée par le fabricant.
+2. *Intermédiaire :* on automatise ce qu'une revue humaine ferait mal (style, imports) pour qu'elle se concentre sur la logique ; au point 10, les deux tourneront en CI et bloqueront un merge.
+3. *Expert :* Ruff réimplémente en Rust plus de 800 règles de flake8 et de ses plugins, isort, pyupgrade et black, avec un seul analyseur, d'où des temps en millisecondes. pip-audit interroge la base PyPA Advisory / OSV ; une alerte se traite en montant la version dans la fourchette (`uv lock --upgrade-package X`) ou en élargissant la fourchette.
