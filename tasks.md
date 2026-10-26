@@ -25,8 +25,8 @@ Déplacé au point 2 : nettoyage des dépendances (`mysql`, `mysql-connector-pyt
 ### Point 2 — Django 5.2 LTS + uv (branche `chore/django-5.2`)
 Une étape à la fois : d'abord changer l'outil (uv) à version égale, **puis** monter les versions. Si quelque chose casse, on sait quelle étape en est la cause.
 
-1. [ ] ⏳ **Presque fait** — Projet `uv` à version égale. Commit `76277d9` : `pyproject.toml` + `uv.lock`, 4 dépendances directes (Django 5.0.14, django-environ 0.14.0, mysqlclient 2.3.0, pillow 13.0.0), livereload retiré, `requirements.txt` supprimé, `check` OK. Expliqué dans `docs.md`. **Reste : `.python-version` toujours ignoré (ligne 84 du `.gitignore`), donc pas commité.**
-2. [ ] Monter à **Django 5.2 LTS + Python 3.13** : `uv python pin 3.13`, `uv add "django>=5.2,<5.3"`, `python -Wd manage.py check`, `makemigrations --check --dry-run`, test manuel des 3 rôles.
+1. [x] Projet `uv` à version égale. Commits `76277d9` + `348abff` : `pyproject.toml`, `uv.lock`, `.python-version`, 4 dépendances directes (Django 5.0.14, django-environ 0.14.0, mysqlclient 2.3.0, pillow 13.0.0), livereload retiré, `requirements.txt` supprimé, `check` OK. Expliqué dans `docs.md`.
+2. [ ] ⏳ **En cours** — Monter à **Django 5.2 LTS + Python 3.13** : `uv python pin 3.13`, `uv add "django>=5.2,<5.3"`, `python -Wd manage.py check`, `makemigrations --check --dry-run`, test manuel des 3 rôles.
 3. [ ] Outils de dev : `uv add --dev ruff pip-audit`, config Ruff dans `pyproject.toml`, premier `pip-audit` et premier `ruff check` (lecture des résultats, pas de correction de masse).
 4. [ ] Finaliser : `CLAUDE.md` (stack + commandes), `docs.md`, merge dans `main`, push.
 
@@ -35,7 +35,10 @@ Une étape à la fois : d'abord changer l'outil (uv) à version égale, **puis**
 3. Settings par environnement (`config/settings/base|dev|prod.py`), `check --deploy`.
 4. Modèles : `CustomUser` sur `AbstractUser` ou rôle explicite, `TextChoices`, `related_name`, `on_delete` revus, index sur `date_appointment`, suppression du `default=1` sur `Enquiry.doctor`.
 5. Logique métier : couche `services.py` (réservation atomique, anti double-réservation du créneau médecin).
-6. Permissions par rôle (étudiant / médecin / réception) + tests.
+6. Permissions par rôle (étudiant / médecin / réception) + tests. Repéré au point 2 :
+   - `account/views.py:20` — redirection vers `?next=` sans vérification (**open redirect**) → `url_has_allowed_host_and_scheme()`.
+   - `account/views.py:66` — `login(request, user)` alors que `authenticate()` peut renvoyer `None` (déprécié en 5.2, erreur en 6.1).
+   - Déconnexion par un lien GET (`templates/header.html:22`) → formulaire POST.
 7. Tests : `pytest-django` + `factory_boy`, couverture des réservations.
 8. Front : template partials + HTMX pour la prise de rendez-vous.
 9. Docker (web + MariaDB 10.11 + redis) et `docker compose`.
