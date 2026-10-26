@@ -26,23 +26,35 @@ Déplacé au point 2 : nettoyage des dépendances (`mysql`, `mysql-connector-pyt
 Une étape à la fois : d'abord changer l'outil (uv) à version égale, **puis** monter les versions. Si quelque chose casse, on sait quelle étape en est la cause.
 
 1. [x] Projet `uv` à version égale. Commits `76277d9` + `348abff` : `pyproject.toml`, `uv.lock`, `.python-version`, 4 dépendances directes (Django 5.0.14, django-environ 0.14.0, mysqlclient 2.3.0, pillow 13.0.0), livereload retiré, `requirements.txt` supprimé, `check` OK. Expliqué dans `docs.md`.
-2. [ ] ⏳ **En cours** — Monter à **Django 5.2 LTS + Python 3.13** : `uv python pin 3.13`, `uv add "django>=5.2,<5.3"`, `python -Wd manage.py check`, `makemigrations --check --dry-run`, test manuel des 3 rôles.
-3. [ ] Outils de dev : `uv add --dev ruff pip-audit`, config Ruff dans `pyproject.toml`, premier `pip-audit` et premier `ruff check` (lecture des résultats, pas de correction de masse).
+2. [x] Django 5.2 LTS + Python 3.13. Commit `261fd90` : Python 3.13.14, Django 5.2.18. `check -Wd` sans avertissement, `makemigrations --check` : aucun changement, `migrate` : rien à appliquer. Test manuel des 3 rôles OK (validé par Gabriel le 2026-10-26), après `changepassword` des comptes dont le mot de passe était en clair (correctif durable : point 3).
+3. [ ] ⏳ **En cours** — Outils de dev : `uv add --dev ruff pip-audit`, config Ruff dans `pyproject.toml`, premier `pip-audit` et premier `ruff check` (lecture des résultats, pas de correction de masse).
 4. [ ] Finaliser : `CLAUDE.md` (stack + commandes), `docs.md`, merge dans `main`, push.
+
+### Point 3 — Comptes et rôles (branche `fix/accounts-roles`, après le point 2)
+Retours de Gabriel du 2026-10-26. Règle métier : **un utilisateur = un seul rôle** (étudiant, médecin **ou** réceptionniste) ; seul l'admin (superuser) a accès à tout.
+
+1. [ ] **Admin et mots de passe hachés** : `CustomUserAdmin` hérite de `django.contrib.auth.admin.UserAdmin` (hachage à la création + formulaire « changer le mot de passe » = reset par l'admin) ; `CustomUser` hérite de `PermissionsMixin` (aujourd'hui `has_perm()` renvoie `True` pour tout le monde) ; re-hacher les 4 mots de passe en clair.
+2. [ ] **Un seul rôle par utilisateur** : champ `role` (`TextChoices`) sur `CustomUser` + data migration depuis les profils existants + validation (un profil doit correspondre au rôle) ; `is_doctor()`… s'appuient sur `role` ; superuser = accès à tout. Corriger les vérifications des vues :
+   - `user_creation_error_page` : `request.user.is_superuser()` (appel d'un booléen → `TypeError`).
+   - `student/views.py:27`, `doctor/views.py:32`, `receptionist/views.py:27` : `not A or B` au lieu de `not (A or B)`.
+   - `doctor/views.py:27` (`not user.is_student()`) et `student/views.py:22` (`not user.is_doctor()`) : tester le rôle attendu, pas l'absence d'un autre.
+3. [ ] **Photo facultative** : `templates/header.html:16` (`user.photo.url` sans photo → `ValueError`) → avatar par défaut ; retirer `required: True` du widget `photo` (formulaires création/modification) ; valider taille et type du fichier.
+4. [ ] **Mots de passe** : changer le sien (`PasswordChangeView` + `PasswordChangeDoneView`, lien dans l'en-tête). Création de compte par un réceptionniste/admin : **ne plus connecter** le compte créé (`authenticate_and_login`, `account/views.py:62`).
+5. [ ] **Données de démo** : `factory_boy` + `Faker` (dev), factories `CustomUser`/`Student`/`Doctor`/`Receptionist`/`Service`, commande `manage.py seed_demo` : ≥ 20 étudiants, ≥ 10 médecins, ≥ 3 réceptionnistes, ≥ 5 services, quelques comptes sans photo.
 
 ### Plan d'amélioration (provisoire, à valider après analyse complète)
 2. ⏳ Voir « Point 2 » ci-dessus.
-3. Settings par environnement (`config/settings/base|dev|prod.py`), `check --deploy`.
-4. Modèles : `CustomUser` sur `AbstractUser` ou rôle explicite, `TextChoices`, `related_name`, `on_delete` revus, index sur `date_appointment`, suppression du `default=1` sur `Enquiry.doctor`.
-5. Logique métier : couche `services.py` (réservation atomique, anti double-réservation du créneau médecin).
-6. Permissions par rôle (étudiant / médecin / réception) + tests. Repéré au point 2 :
+3. ⏳ Voir « Point 3 » ci-dessus.
+4. Settings par environnement (`config/settings/base|dev|prod.py`), `check --deploy`.
+5. Modèles : `TextChoices`, `related_name`, `on_delete` revus, index sur `date_appointment`, suppression du `default=1` sur `Enquiry.doctor`.
+6. Logique métier : couche `services.py` (réservation atomique, anti double-réservation du créneau médecin).
+7. Sécurité des vues + tests de permissions par rôle. Repéré au point 2 :
    - `account/views.py:20` — redirection vers `?next=` sans vérification (**open redirect**) → `url_has_allowed_host_and_scheme()`.
    - `account/views.py:66` — `login(request, user)` alors que `authenticate()` peut renvoyer `None` (déprécié en 5.2, erreur en 6.1).
    - Déconnexion par un lien GET (`templates/header.html:22`) → formulaire POST.
-7. Tests : `pytest-django` + `factory_boy`, couverture des réservations.
-8. Front : template partials + HTMX pour la prise de rendez-vous.
-9. Docker (web + MariaDB 10.11 + redis) et `docker compose`.
-10. CI/CD GitHub Actions (ruff, migrations check, tests, déploiement).
+8. Tests : `pytest-django` + factories du point 3, couverture des réservations.
+9. Front : template partials + HTMX pour la prise de rendez-vous.
+10. Docker (web + MariaDB 10.11 + redis), `docker compose`, CI/CD GitHub Actions (ruff, migrations check, tests, déploiement).
 
 ## Done
 - [x] Version cible : **Django 5.2 LTS** (décidé par Gabriel le 2026-10-26).
