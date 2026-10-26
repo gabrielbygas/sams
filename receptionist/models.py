@@ -1,5 +1,7 @@
 from django.db import models
+
 from account.models import Receptionist
+
 
 # Create your models here.
 class Announcement(models.Model):
@@ -9,4 +11,4 @@ class Announcement(models.Model):
     posted_by = models.ForeignKey(Receptionist, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.subject}"    
+        return f"{self.subject}"
