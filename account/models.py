@@ -1,6 +1,6 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
-
+from django.contrib.auth.models import PermissionsMixin
 from doctor.models import Service
 
 
@@ -62,7 +62,7 @@ class MyUserManager(BaseUserManager):
         return user
 
 
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name="Email", unique=True, max_length=250, blank=False)
     first_name = models.CharField(max_length=100, null=True)  # null=True to save a supeeruser
     last_name = models.CharField(max_length=100, null=True)  # null=True to save a supeeruser
@@ -83,7 +83,6 @@ class CustomUser(AbstractBaseUser):
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-created_at"]
@@ -110,12 +109,6 @@ class CustomUser(AbstractBaseUser):
             return full_name + "  >  " + self.email
         else:
             return self.email
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
 
 
 # Student is a custom user

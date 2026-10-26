@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm, UserCreationForm
 
 from .models import CustomUser, Doctor, Receptionist, Service, Student
 
@@ -70,6 +70,20 @@ class CustomUserChangeForm(UserChangeForm):
                 choices=SEX_CHOICES, attrs={"class": "form-control", "required": True}
             ),
         }
+
+
+class CustomUserAdminCreationForm(AdminUserCreationForm):
+    class Meta(AdminUserCreationForm.Meta):
+        model = CustomUser
+        fields = ("email", "first_name", "last_name")
+        field_classes = {}  # le parent déclare un champ "username" qu'on n'a pas
+
+
+class CustomUserAdminChangeForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        model = CustomUser
+        fields = "__all__"
+        field_classes = {}
 
 
 class StudentForm(forms.ModelForm):

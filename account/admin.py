@@ -1,30 +1,27 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
+from .forms import CustomUserAdminChangeForm, CustomUserAdminCreationForm
 from .models import CustomUser, Doctor, Receptionist, Student
 
 
 # Register your models here.
 @admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
+class CustomUserAdmin(UserAdmin):
+    add_form = CustomUserAdminCreationForm
+    form = CustomUserAdminChangeForm
     list_display = (
         "id",
         "email",
         "first_name",
         "last_name",
+        "is_staff",
+        "is_active",
         "dob",
         "phone",
         "photo",
         "sex",
         "created_at",
-    )
-    list_editable = (
-        "email",
-        "first_name",
-        "last_name",
-        "dob",
-        "phone",
-        "photo",
-        "sex",
     )
     list_display_links = (
         "id",
@@ -35,7 +32,37 @@ class CustomUserAdmin(admin.ModelAdmin):
         "first_name",
         "last_name",
     )
-    list_filter = ("sex",)
+    list_filter = ("is_staff", "is_superuser", "is_active", "sex")
+    ordering = ("email",)
+    readonly_fields = ("last_login", "created_at")
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        (
+            "Informations personnelles",
+            {"fields": ("first_name", "last_name", "dob", "phone", "photo", "sex")},
+        ),
+        (
+            "Permissions",
+            {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")},
+        ),
+        ("Dates", {"fields": ("last_login", "created_at")}),
+    )
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "email",
+                    "first_name",
+                    "last_name",
+                    "usable_password",
+                    "password1",
+                    "password2",
+                ),
+            },
+        ),
+    )
     # list_per_page = 25  # On affiche 25 instances par page
 
 
@@ -62,7 +89,7 @@ class DoctorAdmin(admin.ModelAdmin):
     def get_service(self, obj):
         return ", ".join([service.name for service in obj.service.all()])
 
-    get_service.short_descrition = "Service"
+    get_service.short_description = "Service"
 
 
 @admin.register(Student)
