@@ -15,15 +15,23 @@ Ordre choisi : on sort d'abord les secrets du code, **puis** on les change, pour
    - Incident : le `git switch main` de l'étape 0 a écrasé les fichiers ignorés. Restaurés : `mediafiles/` (12 photos) et `.vscode/` depuis la sauvegarde, `.env` recréé, `collectstatic` refait, connexion DB OK.
 
 **Suivi hors code (Gabriel)**
-- [ ] Demander à GitHub Support de purger les anciens commits encore accessibles par leur identifiant (ex. `github.com/gabrielbygas/sams/commit/f136ddd`). Liste : `git -C ~/backups/sams-avant-filter-repo.git log --all --format=%H > ~/anciens-commits.txt`.
-- [ ] Après la réponse de GitHub : supprimer `~/backups/sams-avant-filter-repo.git` et `~/anciens-commits.txt`.
-- [ ] Vérifier les droits de `laraveluser` (`SHOW GRANTS`).
-- [ ] Ranger les secrets de `.env` dans un gestionnaire de mots de passe.
+- [x] Demander à GitHub Support de purger les anciens commits encore accessibles par leur identifiant (ex. `github.com/gabrielbygas/sams/commit/f136ddd`). Liste : `git -C ~/backups/sams-avant-filter-repo.git log --all --format=%H > ~/anciens-commits.txt`.
+- [x] Après la réponse de GitHub : supprimer `~/backups/sams-avant-filter-repo.git` et `~/anciens-commits.txt`.
+- [x] Vérifier les droits de `laraveluser` (`SHOW GRANTS`).
+- [x] Ranger les secrets de `.env` dans un gestionnaire de mots de passe.
 
 Déplacé au point 2 : nettoyage des dépendances (`mysql`, `mysql-connector-python` inutiles avec `mysqlclient`) et passage à `uv` + `pyproject.toml`.
 
+### Point 2 — Django 5.2 LTS + uv (branche `chore/django-5.2`)
+Une étape à la fois : d'abord changer l'outil (uv) à version égale, **puis** monter les versions. Si quelque chose casse, on sait quelle étape en est la cause.
+
+1. [ ] ⏳ **En cours** — Projet `uv` à version égale (Django 5.0, Python 3.12) : `pyproject.toml` + `uv.lock` + `.python-version` (à retirer du `.gitignore`), seulement les vraies dépendances (`django`, `django-environ`, `mysqlclient`, `pillow`), retrait de `livereload` (`INSTALLED_APPS` + middleware), suppression de `requirements.txt`.
+2. [ ] Monter à **Django 5.2 LTS + Python 3.13** : `uv python pin 3.13`, `uv add "django>=5.2,<5.3"`, `python -Wd manage.py check`, `makemigrations --check --dry-run`, test manuel des 3 rôles.
+3. [ ] Outils de dev : `uv add --dev ruff pip-audit`, config Ruff dans `pyproject.toml`, premier `pip-audit` et premier `ruff check` (lecture des résultats, pas de correction de masse).
+4. [ ] Finaliser : `CLAUDE.md` (stack + commandes), `docs.md`, merge dans `main`, push.
+
 ### Plan d'amélioration (provisoire, à valider après analyse complète)
-2. Montée de version Django 5.0 → **5.2 LTS** (support jusqu'à avril 2028) + Python 3.13, passage à `uv` + `pyproject.toml`, nettoyage des dépendances, `pip-audit`, lecture des dépréciations (`python -Wd`).
+2. ⏳ Voir « Point 2 » ci-dessus.
 3. Settings par environnement (`config/settings/base|dev|prod.py`), `check --deploy`.
 4. Modèles : `CustomUser` sur `AbstractUser` ou rôle explicite, `TextChoices`, `related_name`, `on_delete` revus, index sur `date_appointment`, suppression du `default=1` sur `Enquiry.doctor`.
 5. Logique métier : couche `services.py` (réservation atomique, anti double-réservation du créneau médecin).
