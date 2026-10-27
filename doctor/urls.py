@@ -30,7 +30,7 @@ urlpatterns = (
         path(
             "appointment/view/<int:pk>/", AppointmentDetailView.as_view(), name="view-appointment"
         ),
-        path("error/", doctor_error_page, name="doctor-error-page"),
+        path("error-page/", doctor_error_page, name="error-page"),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

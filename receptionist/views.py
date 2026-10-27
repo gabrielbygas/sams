@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
+from account.models import CustomUser
 from receptionist.forms import AnnouncementForm
 from receptionist.models import Announcement
 
@@ -19,7 +20,7 @@ def home(request):
 
 # receptionist and admin only
 def is_receptionist(user):
-    return user.is_receptionist or user.is_superuser
+    return user.has_role(CustomUser.Role.RECEPTIONIST)
 
 
 @login_required

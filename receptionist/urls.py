@@ -36,7 +36,7 @@ urlpatterns = (
             AnnouncementDeleteView.as_view(),
             name="delete-announcement",
         ),
-        path("error/", receptionist_error_page, name="receptionist-error-page"),
+        path("error-page/", receptionist_error_page, name="error-page"),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
