@@ -17,16 +17,14 @@ def home(request):
     return render(request, "receptionist/home.html", {"user": user})
 
 
-# Only if you are receptionist
+# receptionist and admin only
 def is_receptionist(user):
-    return user.is_receptionist()
+    return user.is_receptionist or user.is_superuser
 
 
 @login_required
 def receptionist_error_page(request):
-    context = {}
-    if not request.user.is_superuser or request.user.is_receptionist():
-        context["error_message"] = "You is not allowed to access this page."
+    context = {"error_message": "Only receptionists can access this page."}
     return render(request, "receptionist/receptionist_error_page.html", context)
 
 

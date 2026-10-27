@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, UpdateView
 
-from account.models import Doctor
+from account.models import CustomUser, Doctor
 from student.forms import EnquiryForm
 from student.models import Appointment, Enquiry
 
@@ -33,21 +33,21 @@ def get_doctors(request):
     )
 
 
-# if you are not a student
-def is_not_student(user):
-    return not user.is_student()
+# doctor/views.py — médecins et réception
+def can_access_doctor_space(user):
+    return user.has_role(CustomUser.Role.DOCTOR, CustomUser.Role.RECEPTIONIST)
 
 
 @login_required
 def doctor_error_page(request):
-    context = {}
-    if not request.user.is_superuser or request.user.is_student():
-        context["error_message"] = "Student is not allowed to access this page."
+    context = {"error_message": "Only doctors and receptionists can access this page."}
     return render(request, "doctor/doctor_error_page.html", context)
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_student, login_url="doctors:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_doctor_space, login_url="doctors:error-page"), name="dispatch"
+)
 class EnquiryListView(ListView):
     model = Enquiry
     context_object_name = "enquirys"
@@ -79,7 +79,9 @@ class EnquiryListView(ListView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_student, login_url="doctors:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_doctor_space, login_url="doctors:error-page"), name="dispatch"
+)
 class EnquiryListAllView(ListView):
     model = Enquiry
     context_object_name = "enquirys"
@@ -111,7 +113,9 @@ class EnquiryListAllView(ListView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_student, login_url="doctors:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_doctor_space, login_url="doctors:error-page"), name="dispatch"
+)
 class EnquiryUpdateView(UpdateView):
     model = Enquiry
     form_class = EnquiryForm
@@ -132,7 +136,9 @@ class EnquiryUpdateView(UpdateView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_student, login_url="doctors:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_doctor_space, login_url="doctors:error-page"), name="dispatch"
+)
 class EnquiryDetailView(DetailView):
     model = Enquiry
     context_object_name = "enquiry"
@@ -140,7 +146,9 @@ class EnquiryDetailView(DetailView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_student, login_url="doctors:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_doctor_space, login_url="doctors:error-page"), name="dispatch"
+)
 class AppointmentListView(ListView):
     model = Appointment
     context_object_name = "appointments"
@@ -176,7 +184,9 @@ class AppointmentListView(ListView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_student, login_url="doctors:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_doctor_space, login_url="doctors:error-page"), name="dispatch"
+)
 class AppointmentDetailView(DetailView):
     model = Appointment
     context_object_name = "appointment"

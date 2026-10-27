@@ -75,7 +75,7 @@ class CustomUserChangeForm(UserChangeForm):
 class CustomUserAdminCreationForm(AdminUserCreationForm):
     class Meta(AdminUserCreationForm.Meta):
         model = CustomUser
-        fields = ("email", "first_name", "last_name")
+        fields = ("email", "first_name", "last_name", "role")
         field_classes = {}  # le parent déclare un champ "username" qu'on n'a pas
 
 

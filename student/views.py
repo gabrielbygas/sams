@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
-from account.models import Student
+from account.models import CustomUser, Student
 from student.forms import AppointmentForm, EnquiryForm
 from student.models import Appointment, Enquiry
 
@@ -19,22 +19,22 @@ def home(request):
     return render(request, "student/home.html", context)
 
 
-# if you are not a doctor
-def is_not_doctor(user):
-    return not user.is_doctor()
+# student/views.py — étudiants et réception (qui voit tous les rendez-vous)
+def can_access_student_space(user):
+    return user.has_role(CustomUser.Role.STUDENT, CustomUser.Role.RECEPTIONIST)
 
 
 @login_required
 def student_error_page(request):
-    context = {}
-    if not request.user.is_superuser or request.user.is_doctor():
-        context["error_message"] = "Doctor is not allowed to access this page."
+    context = {"error_message": "Only students and receptionists can access this page."}
     return render(request, "student/student_error_page.html", context)
 
 
 # List Appointment
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_doctor, login_url="students:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_student_space, login_url="students:error-page"), name="dispatch"
+)
 class AppointmentListView(ListView):
     model = Appointment
     context_object_name = "appointments"
@@ -71,7 +71,9 @@ class AppointmentListView(ListView):
 
 # Detail Appointment
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_doctor, login_url="students:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_student_space, login_url="students:error-page"), name="dispatch"
+)
 class AppointmentDetailView(DetailView):
     model = Appointment
     context_object_name = "appointment"
@@ -80,7 +82,9 @@ class AppointmentDetailView(DetailView):
 
 # Create Appointment
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_doctor, login_url="students:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_student_space, login_url="students:error-page"), name="dispatch"
+)
 class AppointmentCreateView(CreateView):
     model = Appointment
     form_class = AppointmentForm
@@ -102,7 +106,9 @@ class AppointmentCreateView(CreateView):
 
 # Update Appointment
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_doctor, login_url="students:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_student_space, login_url="students:error-page"), name="dispatch"
+)
 class AppointmentUpdateView(UpdateView):
     model = Appointment
     form_class = AppointmentForm
@@ -115,7 +121,9 @@ class AppointmentUpdateView(UpdateView):
 
 # Delete Appointment
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_doctor, login_url="students:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_student_space, login_url="students:error-page"), name="dispatch"
+)
 class AppointmentDeleteView(DeleteView):
     model = Appointment
     template_name = "student/appointment_confirm_delete.html"
@@ -173,7 +181,9 @@ class EnquiryDetailView(DetailView):
 
 # Create Enquiry
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_doctor, login_url="students:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_student_space, login_url="students:error-page"), name="dispatch"
+)
 class EnquiryCreateView(CreateView):
     model = Enquiry
     form_class = EnquiryForm
@@ -214,7 +224,9 @@ class EnquiryUpdateView(UpdateView):
 
 # Enquiry Delete
 @method_decorator(login_required, name="dispatch")
-@method_decorator(user_passes_test(is_not_doctor, login_url="students:error-page"), name="dispatch")
+@method_decorator(
+    user_passes_test(can_access_student_space, login_url="students:error-page"), name="dispatch"
+)
 class EnquiryDeleteView(DeleteView):
     model = Enquiry
     template_name = "student/enquiry_confirm_delete.html"

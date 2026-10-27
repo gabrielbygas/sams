@@ -10,6 +10,7 @@ from .views import (
     AnnouncementListView,
     AnnouncementUpdateView,
     home,
+    receptionist_error_page,
 )
 
 app_name = "receptionists"
@@ -35,6 +36,7 @@ urlpatterns = (
             AnnouncementDeleteView.as_view(),
             name="delete-announcement",
         ),
+        path("error/", receptionist_error_page, name="receptionist-error-page"),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -10,6 +10,7 @@ from .views import (
     EnquiryListAllView,
     EnquiryListView,
     EnquiryUpdateView,
+    doctor_error_page,
     get_doctors,
     home,
 )
@@ -29,6 +30,7 @@ urlpatterns = (
         path(
             "appointment/view/<int:pk>/", AppointmentDetailView.as_view(), name="view-appointment"
         ),
+        path("error/", doctor_error_page, name="doctor-error-page"),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

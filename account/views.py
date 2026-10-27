@@ -2,9 +2,17 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
+from django.db import transaction
 from django.shortcuts import redirect, render
 
 from .forms import CustomUserCreationForm, DoctorForm, ReceptionistForm, StudentForm
+from .models import CustomUser
+
+ROLE_HOME = {
+    CustomUser.Role.STUDENT: "students:home",
+    CustomUser.Role.DOCTOR: "doctors:home",
+    CustomUser.Role.RECEPTIONIST: "receptionists:home",
+}
 
 
 # Create your views here.
@@ -15,16 +23,7 @@ def auth_login(request):
         if login_form.is_valid():
             user = login_form.get_user()
             login(request, user)
-            if request.GET.get("next"):  # if @login_required
-                next_url = request.GET.get("next")
-            elif user.is_doctor():  # if user is doctor
-                next_url = "doctors:home"
-            elif user.is_receptionist():  # if user is receptionist
-                next_url = "receptionists:home"
-            elif user.is_student():  # if user is student
-                next_url = "students:home"
-            else:
-                next_url = "home"
+            next_url = request.GET.get("next") or ROLE_HOME.get(user.role, "home")
             return redirect(next_url)
     else:
         login_form = AuthenticationForm()
@@ -45,12 +44,14 @@ def is_superuser(user):
 
 # if you are superuser or receptionist
 def is_superuser_or_receptionist(user):
-    return user.is_superuser or user.is_receptionist()
+    return user.has_role(CustomUser.Role.RECEPTIONIST)
 
 
 # create user
-def create_user(user_form):
-    user = user_form.save()
+def create_user(user_form, role):
+    user = user_form.save(commit=False)
+    user.role = role
+    user.save()
     return user
 
 
@@ -70,7 +71,9 @@ def authenticate_and_login(request, user_form):
     login(request, user)
 
 
-def create_user_view(request, user_form_class, custom_user_form_class, template_name, redirect_to):
+def create_user_view(
+    request, user_form_class, custom_user_form_class, template_name, redirect_to, role
+):
     if request.method == "POST":  # if POST Request
         user_form = user_form_class(request.POST, request.FILES)
         custom_user_form = custom_user_form_class(request.POST)
@@ -87,17 +90,15 @@ def create_user_view(request, user_form_class, custom_user_form_class, template_
                         )
             if user_form.is_valid() and custom_user_form.is_valid():
                 try:
-                    user = create_user(user_form)
-                    custom_user = create_custom_user(user, custom_user_form)
+                    with transaction.atomic():
+                        user = create_user(user_form, role)
+                        custom_user = create_custom_user(user, custom_user_form)
 
-                    # if the custom_user is a doctor, so he has a service field
-                    if custom_user_form.cleaned_data.get("service"):
-                        # Get the services from the form
-                        services = custom_user_form.cleaned_data.get("service")
-                        # Add the services to the doctor
-                        for service in services:
-                            custom_user.service.add(service)
-                        custom_user.save()
+                        # if the custom_user is a doctor, so he has a service field
+                        if custom_user_form.cleaned_data.get("service"):
+                            # Get the services from the form
+                            services = custom_user_form.cleaned_data.get("service")
+                            custom_user.service.set(services)
 
                     authenticate_and_login(request, user_form)
                     messages.success(request, "You Have Successfully Registered! Welcome!")
@@ -119,7 +120,12 @@ def create_user_view(request, user_form_class, custom_user_form_class, template_
 
 def create_student(request):
     return create_user_view(
-        request, CustomUserCreationForm, StudentForm, "account/create_student.html", "students:home"
+        request,
+        user_form_class=CustomUserCreationForm,
+        custom_user_form_class=StudentForm,
+        template_name="account/create_student.html",
+        redirect_to="students:home",
+        role=CustomUser.Role.STUDENT,
     )
 
 
@@ -127,7 +133,12 @@ def create_student(request):
 @user_passes_test(is_superuser_or_receptionist, login_url="accounts:user_creation_error_page")
 def create_doctor(request):
     return create_user_view(
-        request, CustomUserCreationForm, DoctorForm, "account/create_doctor.html", "doctors:home"
+        request,
+        user_form_class=CustomUserCreationForm,
+        custom_user_form_class=DoctorForm,
+        template_name="account/create_doctor.html",
+        redirect_to="doctors:home",
+        role=CustomUser.Role.DOCTOR,
     )
 
 
@@ -136,18 +147,20 @@ def create_doctor(request):
 def create_receptionist(request):
     return create_user_view(
         request,
-        CustomUserCreationForm,
-        ReceptionistForm,
-        "account/create_receptionist.html",
-        "receptionists:home",
+        user_form_class=CustomUserCreationForm,
+        custom_user_form_class=ReceptionistForm,
+        template_name="account/create_receptionist.html",
+        redirect_to="receptionists:home",
+        role=CustomUser.Role.RECEPTIONIST,
     )
 
 
 @login_required
 def user_creation_error_page(request):
-    context = {}
-    if not request.user.is_superuser and not request.user.is_receptionist():
-        context["error_message"] = "Only an Admin or Receptionist can access this page."
-    elif not request.user.is_superuser():
-        context["error_message"] = "Only a Receptionist can access this page."
-    return render(request, "account/user_creation_error_page.html", context)
+    if request.user.has_role(CustomUser.Role.RECEPTIONIST):
+        error_message = "Only an Admin can create a receptionist."
+    else:
+        error_message = "Only an Admin or a Receptionist can create this account."
+    return render(
+        request, "account/user_creation_error_page.html", {"error_message": error_message}
+    )

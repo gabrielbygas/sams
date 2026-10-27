@@ -15,6 +15,7 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "first_name",
         "last_name",
+        "role",
         "is_staff",
         "is_active",
         "dob",
@@ -25,6 +26,7 @@ class CustomUserAdmin(UserAdmin):
     )
     list_display_links = (
         "id",
+        "role",
         "created_at",
     )
     search_fields = (
@@ -32,14 +34,14 @@ class CustomUserAdmin(UserAdmin):
         "first_name",
         "last_name",
     )
-    list_filter = ("is_staff", "is_superuser", "is_active", "sex")
+    list_filter = ("role", "is_staff", "is_superuser", "is_active", "sex")
     ordering = ("email",)
     readonly_fields = ("last_login", "created_at")
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (
             "Informations personnelles",
-            {"fields": ("first_name", "last_name", "dob", "phone", "photo", "sex")},
+            {"fields": ("first_name", "last_name", "role", "dob", "phone", "photo", "sex")},
         ),
         (
             "Permissions",
@@ -56,6 +58,7 @@ class CustomUserAdmin(UserAdmin):
                     "email",
                     "first_name",
                     "last_name",
+                    "role",
                     "usable_password",
                     "password1",
                     "password2",
@@ -63,7 +66,11 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
-    # list_per_page = 25  # On affiche 25 instances par page
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:  # page de modification, pas de création
+            return (*self.readonly_fields, "role")
+        return self.readonly_fields
 
 
 @admin.register(Doctor)
