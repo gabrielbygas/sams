@@ -20,3 +20,4 @@
 - [ ] HTTPS + cookies sécurisés + HSTS
 - [ ] Backup DB avant `migrate`
 - [ ] `collectstatic` dans le pipeline
+- [ ] Hébergement actuel visé : cPanel « Setup Python App » (PlanetHoster). Problème connu de l'ancienne version : images non affichées en prod. Avec `DEBUG=False`, `static()` des `urls.py` ne sert plus rien ; `/static/` et `/media/` doivent être servis par le serveur web (ou WhiteNoise pour `/static/` uniquement). Voir `tasks.md` point 10.
